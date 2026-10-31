@@ -14,6 +14,8 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 <img width="1920" height="1159" alt="FaceBlur" src="https://github.com/user-attachments/assets/832b7a70-4fda-444f-ac4a-52badacc4095" />
 
 ## Obecnie (v1.35) OpenCV (cv2.VideoWriter), którego używasz do eksportu, zawsze usuwa ścieżkę dźwiękową z nagrania.
+
+Wersja v1.36 z eksportem z dźwiękiem w przygotowaniu...
 ---
 
 ##  Spis treści
