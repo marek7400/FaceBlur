@@ -47,7 +47,7 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 
 Aplikacja jest dystrybuowana jako **pojedynczy, w pełni samowystarczalny plik wykonywalny Windows**:
 
-1. Pobierz plik **`FaceBlurTool.exe`** z zakładki Releases lub skompiluj go samodzielnie skryptem `make_exe.bat`.
+1. Pobierz plik **`FaceBlur.exe`** z zakładki Releases lub skompiluj go samodzielnie skryptem `make_exe.bat`.
 2. Umieść plik w dowolnym folderze na dysku.
 3. Uruchom program dwuklikiem – wszystkie 4 silniki AI są zaszyte wewnątrz pliku, więc aplikacja nie wymaga instalowania Pythona ani żadnych zewnętrznych bibliotek.
 
