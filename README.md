@@ -13,7 +13,7 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 
 <img width="1920" height="1159" alt="FaceBlur" src="https://github.com/user-attachments/assets/832b7a70-4fda-444f-ac4a-52badacc4095" />
 
-
+## Obecnie (v1.35) OpenCV (cv2.VideoWriter), którego używasz do eksportu, zawsze usuwa ścieżkę dźwiękową z nagrania.
 ---
 
 ##  Spis treści
@@ -28,7 +28,6 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 ---
 
 ##  Główne cechy
-# Obecnie (v1.35) OpenCV (cv2.VideoWriter), którego używasz do eksportu, zawsze usuwa ścieżkę dźwiękową z nagrania.
 * **Wsparcie dla wideo i zdjęć:** Anonimizacja plików wideo (`.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`) oraz fotografii (`.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`).
 * **Śledzenie wielu twarzy naraz (Multi-Face):** Niezależne śledzenie wielu osób w kadrze z osobnymi identyfikatorami (Twarz 1, Twarz 2 itd.).
 * **Brak sztucznych obwódek:** Zamazane obszary wtapiają się czysto w otoczenie bez widocznych kolorowych obrysów.
