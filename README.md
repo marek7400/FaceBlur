@@ -1,6 +1,6 @@
 
 
-# ?? FaceBlur (Multi-Face Tracking & Anonymizer)
+#  FaceBlur (Multi-Face Tracking & Anonymizer)
 
 [![GitHub](https://img.shields.io/badge/GitHub-marek7400-blue?style=flat&logo=github)](https://github.com/marek7400?tab=repositories)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=flat&logo=windows)](https://github.com/marek7400)
@@ -16,7 +16,7 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 
 ---
 
-## ?? Spis treści
+##  Spis treści
 1. [Główne cechy](#-główne-cechy)
 2. [Pobieranie i uruchomienie (.EXE)](#-pobieranie-i-uruchomienie-exe)
 3. [Uruchomienie ze źródeł (Python)](#-uruchomienie-ze-źródeł-python)
@@ -27,7 +27,7 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 8. [Rozwiązywanie problemów (FAQ)](#-rozwiązywanie-problemów-faq)
 ---
 
-## ?? Główne cechy
+##  Główne cechy
 
 * **Wsparcie dla wideo i zdjęć:** Anonimizacja plików wideo (`.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`) oraz fotografii (`.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`).
 * **Śledzenie wielu twarzy naraz (Multi-Face):** Niezależne śledzenie wielu osób w kadrze z osobnymi identyfikatorami (Twarz 1, Twarz 2 itd.).
@@ -43,7 +43,7 @@ Program został zoptymalizowany pod kątem pracy na standardowych procesorach (C
 
 ---
 
-## ?? Pobieranie i uruchomienie (.EXE)
+##  Pobieranie i uruchomienie (.EXE)
 
 Aplikacja jest dystrybuowana jako **pojedynczy, w pełni samowystarczalny plik wykonywalny Windows**:
 
@@ -53,7 +53,7 @@ Aplikacja jest dystrybuowana jako **pojedynczy, w pełni samowystarczalny plik w
 
 ---
 
-## ?? Uruchomienie ze źródeł (Python)
+##  Uruchomienie ze źródeł (Python)
 
 Jeśli wolisz uruchomić aplikację bezpośrednio w środowisku Pythona:
 
@@ -80,7 +80,7 @@ numpy
 
 ---
 
-## ?? Szczegółowy opis funkcji i interfejsu
+##  Szczegółowy opis funkcji i interfejsu
 
 ### 1. Górny pasek narzędzi
 * **Wybierz wideo:** Otwiera plik filmowy, ładuje klatki i konfiguruje oś czasu.
@@ -117,7 +117,7 @@ numpy
 
 ---
 
-## ?? Metody zaznaczania i edycji
+##  Metody zaznaczania i edycji
 
 ```
 -¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¬
@@ -137,7 +137,7 @@ L¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦�
 
 ---
 
-## ? Skróty klawiszowe i sterowanie myszą
+##  Skróty klawiszowe i sterowanie myszą
 
 | Klawisz / Przycisk | Akcja |
 | :--- | :--- |
@@ -159,7 +159,7 @@ L¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦�
 
 ---
 
-## ?? Przegląd modeli AI (Detektory twarzy)
+## Przegląd modeli AI (Detektory twarzy)
 
 Program pozwala na dynamiczny wybór spośród 4 modeli ONNX:
 
@@ -180,7 +180,7 @@ Program pozwala na dynamiczny wybór spośród 4 modeli ONNX:
 
 ---
 
-## ?? Tryby zamazywania i kształty
+## Tryby zamazywania i kształty
 
 1. **Gaussian Blur (Domyślny):** Płynne, estetyczne rozmycie plamą Gaussa. Siłę ustala suwak `Siła rozmycia`.
 2. **PIXEL MODE:** Mozaika pikselowa. Rozmiar pikseli rośnie wraz z wartością suwaka rozmycia.
@@ -190,7 +190,7 @@ Program pozwala na dynamiczny wybór spośród 4 modeli ONNX:
 
 ---
 
-## ? Rozwiązywanie problemów (FAQ)
+## Rozwiązywanie problemów (FAQ)
 
 #### 1. Czy program wymaga zewnętrznej karty graficznej?
 Nie. Wszystkie algorytmy i sieci neuronowe ONNX zostały zoptymalizowane pod instrukcje wektorowe procesora (CPU). Program działa płynnie nawet na zintegrowanych układach graficznych i starszych komputerach.
