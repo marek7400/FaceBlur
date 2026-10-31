@@ -88,13 +88,13 @@ numpy
 * **Model (Lista rozwijana):** Przełączanie w locie silnika AI (YuNet, SCRFD 500M, SCRFD 2.5G, YOLO-Face Nano).
 * **Wskaż...:** Pozwala wskazać z dysku dowolny inny plik `.onnx` zgodny z architekturą.
 * **Zamaż wszystkie zielone:** Zaczyna śledzić wszystkie twarze wykryte przez AI na bieżącej klatce jednym kliknięciem.
-* **? PAUSE:** Zamyka aktywny segment twarzy na poprzedniej klatce. Na bieżącej klatce i kolejnych rozmycie zostaje wyłączone.
-* **? RESUME:** Wznawia śledzenie twarzy z listy od bieżącej klatki (tworzy nowy segment).
+* **PAUSE:** Zamyka aktywny segment twarzy na poprzedniej klatce. Na bieżącej klatce i kolejnych rozmycie zostaje wyłączone.
+* **RESUME:** Wznawia śledzenie twarzy z listy od bieżącej klatki (tworzy nowy segment).
 * **CIRCLE (owal):** Zmienia kształt maski z prostokątnej na owalną (elipsa).
 * **BLACKBOX:** Zamiast rozmycia nakłada pełne zaczernienie (cenzurę).
 * **LINE (wielokąt):** Włącza tryb obrysowywania kształtów wieloma liniami.
 * **Stop gdy zgubi:** Zatrzymuje śledzenie danej twarzy, jeśli obiekt wykona zbyt gwałtowny skok lub zniknie z kadru.
-* **?? ZOOM 1:1:** Natychmiast resetuje powiększenie i centruje cały kadr.
+* **ZOOM 1:1:** Natychmiast resetuje powiększenie i centruje cały kadr.
 * **Cofnij:** Cofa ostatnio dodany segment lub przejęcie śledzenia.
 * **Wyczyść:** Resetuje wszystkie ramki i całą oś czasu do zera.
 * **Eksportuj / Zapisz:** Zapisuje gotowy film `.mp4` lub przetworzone zdjęcie.
