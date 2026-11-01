@@ -119,8 +119,8 @@ numpy
 * **Model (Lista rozwijana):** Przełączanie w locie silnika AI (YuNet, SCRFD 500M, SCRFD 2.5G, YOLO-Face Nano).
 * **Wskaż...:** Pozwala wskazać plik `.onnx` z dysku.
 * **Zamaż wszystkie zielone:** Zaczyna śledzić wszystkie twarze wykryte przez AI na bieżącej klatce jednym kliknięciem.
-* **? PAUSE:** Kończy śledzenie twarzy na poprzedniej klatce (wyłącza maskowanie od bieżącej klatki).
-* **? RESUME:** Wznawia śledzenie twarzy od bieżącej klatki.
+* ** PAUSE:** Kończy śledzenie twarzy na poprzedniej klatce (wyłącza maskowanie od bieżącej klatki).
+* ** RESUME:** Wznawia śledzenie twarzy od bieżącej klatki.
 * **Stop gdy zgubi:** Zatrzymuje śledzenie danej twarzy w razie gwałtownego skoku lub opuszczenia kadru.
 * ** ZOOM 1:1:** Resetuje powiększenie i wyśrodkowuje widok.
 * **Cofnij:** Cofa ostatnio utworzony segment śledzenia.
