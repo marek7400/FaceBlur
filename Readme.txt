@@ -1,74 +1,106 @@
 
-
-# ?? FaceBlur (Multi-Face Tracking & Anonymizer)
+#  FaceBlur (Multi-Face Tracking & Anonymizer) â€“ v1.36
 
 [![GitHub](https://img.shields.io/badge/GitHub-marek7400-blue?style=flat&logo=github)](https://github.com/marek7400?tab=repositories)
+[![Release](https://img.shields.io/badge/Wersja-1.36-success?style=flat)](https://github.com/marek7400)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=flat&logo=windows)](https://github.com/marek7400)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-brightgreen?style=flat&logo=python)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-DNN%20%7C%20CSRT-orange?style=flat&logo=opencv)](https://opencv.org/)
+[![FFmpeg](https://img.shields.io/badge/Audio-FFmpeg%20Pass--Through-red?style=flat&logo=ffmpeg)](https://ffmpeg.org/)
 
-Nowoczesne, lekkie i w 100% lokalne narzêdzie dla systemu Windows do automatycznego i rêcznego zamazywania/anonimizacji **wielu twarzy jednoczeœnie na wideo oraz statycznych zdjêciach**.
+Nowoczesne, lekkie i w 100% lokalne narzÄ™dzie dla systemu Windows do automatycznego i rÄ™cznego zamazywania/anonimizacji **wielu twarzy jednoczeÅ›nie na wideo oraz statycznych zdjÄ™ciach**.
 
-Program zosta³ zoptymalizowany pod k¹tem pracy na standardowych procesorach (CPU) bez potrzeby posiadania potê¿nej karty graficznej. Posiada wbudowany bufor trajektorii (brak zaciêæ przy cofaniu wideo), 4 zaawansowane silniki detekcji AI ONNX, p³ynny zoom z przesuwaniem kadru (Pan) oraz mo¿liwoœæ tworzenia masek prostok¹tnych, owalnych i wielok¹tnych (`LINE`).
-
----
-
-## ?? Spis treœci
-1. [G³ówne cechy](#-g³ówne-cechy)
-2. [Pobieranie i uruchomienie (.EXE)](#-pobieranie-i-uruchomienie-exe)
-3. [Uruchomienie ze Ÿróde³ (Python)](#-uruchomienie-ze-Ÿróde³-python)
-4. [Szczegó³owy opis funkcji i interfejsu](#-szczegó³owy-opis-funkcji-i-interfejsu)
-5. [Skróty klawiszowe i sterowanie mysz¹](#-skróty-klawiszowe-i-sterowanie-mysz¹)
-6. [Przegl¹d modeli AI (Detektory twarzy)](#-przegl¹d-modeli-ai-detektory-twarzy)
-7. [Tryby zamazywania i kszta³ty](#-tryby-zamazywania-i-kszta³ty)
-8. [Rozwi¹zywanie problemów (FAQ)](#-rozwi¹zywanie-problemów-faq)
----
-
-## ?? G³ówne cechy
-
-* **Wsparcie dla wideo i zdjêæ:** Anonimizacja plików wideo (`.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`) oraz fotografii (`.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`).
-* **Œledzenie wielu twarzy naraz (Multi-Face):** Niezale¿ne œledzenie wielu osób w kadrze z osobnymi identyfikatorami (Twarz 1, Twarz 2 itd.).
-* **Brak sztucznych obwódek:** Zamazane obszary wtapiaj¹ siê czysto w otoczenie bez widocznych kolorowych obrysów.
-* **Hybrydowe oznaczanie (AUTO + MANUAL na ka¿dej klatce):** 
-  * Klikniêcie zielonej ramki AI $\rightarrow$ natychmiastowe œledzenie automatyczne.
-  * Przeci¹gniêcie lewym przyciskiem myszy $\rightarrow$ rêczne dodanie w³asnej ramki.
-  * Tryb **LINE** $\rightarrow$ swobodne rysowanie wielok¹tów klikniêcie po klikniêciu.
-* **Elastyczna korekta (Handover per twarz):** Klikniêcie nowej pozycji œledzonej twarzy automatycznie koñczy jej stary segment i p³ynnie wznawia nowy.
-* **Pamiêæ trajektorii (Trajectory Caching):** B³yskawiczne przewijanie osi czasu wstecz bez ponownego przeliczania trackerów i bez zamra¿ania programu.
-* **Pauza œledzenia (PAUSE / RESUME):** Mo¿liwoœæ czasowego przerwania zamazywania (np. gdy postaæ chowa siê za œcian¹) i wznowienia go w odpowiedniej klatce.
-* **Wbudowany podgl¹d z Zoomem (do 12x):** Przybli¿anie kó³kiem myszy i przesuwanie kadru (Pan) prawym przyciskiem myszy. Kontrolki nie powiêkszaj¹ siê do gigantycznych rozmiarów przy zoomie.
+Aplikacja zostaÅ‚a zoptymalizowana pod kÄ…tem pracy na standardowych procesorach (CPU) bez potrzeby posiadania dedykowanej karty graficznej. Posiada wbudowany bufor trajektorii (brak zaciÄ™Ä‡ przy cofaniu wideo), 4 zaawansowane silniki detekcji AI ONNX, pÅ‚ynny zoom z przesuwaniem kadru (Pan), miÄ™kkie wtapianie krawÄ™dzi (Feathering), peÅ‚ne zachowanie oryginalnego dÅºwiÄ™ku (FFmpeg), tryb ciemny/jasny oraz moÅ¼liwoÅ›Ä‡ tworzenia masek prostokÄ…tnych, owalnych i wielokÄ…tnych (`LINE`).
 
 ---
 
-## ?? Pobieranie i uruchomienie (.EXE)
-
-Aplikacja jest dystrybuowana jako **pojedynczy, w pe³ni samowystarczalny plik wykonywalny Windows**:
-
-1. Pobierz plik **`FaceBlurTool.exe`** z zak³adki Releases lub skompiluj go samodzielnie skryptem `make_exe.bat`.
-2. Umieœæ plik w dowolnym folderze na dysku.
-3. Uruchom program dwuklikiem – wszystkie 4 silniki AI s¹ zaszyte wewn¹trz pliku, wiêc aplikacja nie wymaga instalowania Pythona ani ¿adnych zewnêtrznych bibliotek.
+## Spis treÅ›ci
+1. [NowoÅ›ci w wersji 1.36](#-nowoÅ›ci-w-wersji-136)
+2. [GÅ‚Ã³wne cechy](#-gÅ‚Ã³wne-cechy)
+3. [Wymagania i integracja z FFmpeg](#-wymagania-i-integracja-z-ffmpeg-dÅºwiÄ™k-w-wideo)
+4. [Pobieranie i uruchomienie (.EXE)](#-pobieranie-i-uruchomienie-exe)
+5. [Uruchomienie ze ÅºrÃ³deÅ‚ (Python)](#-uruchomienie-ze-ÅºrÃ³deÅ‚-python)
+6. [SzczegÃ³Å‚owy opis interfejsu](#-szczegÃ³Å‚owy-opis-interfejsu)
+7. [Metody zaznaczania i edycji masek](#-metody-zaznaczania-i-edycji-masek)
+8. [SkrÃ³ty klawiszowe i sterowanie myszÄ…](#-skrÃ³ty-klawiszowe-i-sterowanie-myszÄ…)
+9. [PrzeglÄ…d modeli AI (Detektory twarzy)](#-przeglÄ…d-modeli-ai-detektory-twarzy)
+10. [Tryby zamazywania i ksztaÅ‚ty](#-tryby-zamazywania-i-ksztaÅ‚ty)
+11. [RozwiÄ…zywanie problemÃ³w (FAQ)](#-rozwiÄ…zywanie-problemÃ³w-faq)
 
 ---
 
-## ?? Uruchomienie ze Ÿróde³ (Python)
+##  NowoÅ›ci w wersji 1.36
 
-Jeœli wolisz uruchomiæ aplikacjê bezpoœrednio w œrodowisku Pythona:
+*  **PeÅ‚ne zachowanie Å›cieÅ¼ki dÅºwiÄ™kowej w filmach:** DziÄ™ki integracji z narzÄ™dziem **FFmpeg**, eksportowane wideo zachowuje 100% oryginalnego dÅºwiÄ™ku (`audio pass-through` bez utraty jakoÅ›ci).
+*  **Wtapianie krawÄ™dzi maski (Feathering):** PÅ‚ynne, zmiÄ™kczone przejÅ›cie tonalne miÄ™dzy rozmytym obiektem a tÅ‚em. Sterowane dedykowanym suwakiem w zakresie 0â€“100%.
+*  **PrzeÅ‚Ä…cznik motywu Jasny / Ciemny (Dark Mode):** Nowy przycisk ` / ` w gÃ³rnym pasku dynamicznie dopasowuje paletÄ™ barw caÅ‚ego interfejsu.
+*  **Dedykowane okno postÄ™pu eksportu:** Procentowy licznik (`%`), pasek postÄ™pu oraz informacja o aktualnie renderowanej klatce w osobnym oknie modalnym.
+*  **Wszystkie okna i komunikaty wycentrowane:** Komunikaty informacyjne, pytania, bÅ‚Ä™dy oraz pasek eksportu otwierajÄ… siÄ™ idealnie na Å›rodku ekranu.
+*  **Ulepszone suwaki i pamiÄ™Ä‡ ustawieÅ„:**
+  * WartoÅ›Ä‡ liczbowa oraz nazwa wyÅ›wietlane sÄ… bezpoÅ›rednio **nad suwakiem** (wzorem osi czasu).
+  * Tolerancja skoku zwiÄ™kszona do **300 px**.
+  * WydÅ‚uÅ¼one suwaki dla wiÄ™kszej precyzji.
+  * Automatyczny zapis ustawieÅ„ do pliku `settings.json` i ich przywracanie przy starcie.
+*  **UporzÄ…dkowany ukÅ‚ad:** PrzeÅ‚Ä…czniki ksztaÅ‚tÃ³w (`CIRCLE`, `BLACKBOX`, `LINE`, `PIXEL MODE`) zostaÅ‚y przeniesione do dolnego panelu parametrÃ³w.
+
+---
+
+## GÅ‚Ã³wne cechy
+
+* **Wsparcie dla wideo i zdjÄ™Ä‡:** Anonimizacja plikÃ³w filmowych (`.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`) oraz fotografii (`.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`).
+* **Åšledzenie wielu twarzy naraz (Multi-Face):** NiezaleÅ¼ne Å›ledzenie wielu osÃ³b w kadrze z osobnymi identyfikatorami (Twarz 1, Twarz 2 itd.).
+* **Brak sztucznych obwÃ³dek:** Zamazane obszary wtapiajÄ… siÄ™ w otoczenie bez widocznych kolorowych obrysÃ³w na finalnym materiale.
+* **Hybrydowe oznaczanie (AUTO + MANUAL na kaÅ¼dej klatce):** 
+  * KlikniÄ™cie zielonej ramki AI $\rightarrow$ natychmiastowe Å›ledzenie automatyczne.
+  * PrzeciÄ…gniÄ™cie lewym przyciskiem myszy $\rightarrow$ rÄ™czne dodanie wÅ‚asnej ramki.
+  * Tryb **LINE** $\rightarrow$ swobodne rysowanie wielokÄ…tÃ³w klikniÄ™cie po klikniÄ™ciu.
+* **Elastyczna korekta (Handover per twarz):** KlikniÄ™cie nowej pozycji Å›ledzonej twarzy automatycznie koÅ„czy jej stary segment i pÅ‚ynnie wznawia nowy.
+* **PamiÄ™Ä‡ trajektorii (Trajectory Caching):** BÅ‚yskawiczne przewijanie osi czasu wstecz bez ponownego przeliczania trackerÃ³w i bez zamraÅ¼ania programu.
+* **Pauza Å›ledzenia (PAUSE / RESUME):** MoÅ¼liwoÅ›Ä‡ czasowego przerwania zamazywania (np. gdy postaÄ‡ chowa siÄ™ za przeszkodÄ…) i wznowienia go w dowolnej klatce.
+* **Wbudowany podglÄ…d z Zoomem (do 12x):** PrzybliÅ¼anie kÃ³Å‚kiem myszy i przesuwanie kadru (Pan) prawym przyciskiem myszy. Kontrolki zachowujÄ… staÅ‚y, porÄ™czny rozmiar na ekranie.
+
+---
+
+## Wymagania i integracja z FFmpeg (DÅºwiÄ™k w wideo)
+
+Aby program mÃ³gÅ‚ scaliÄ‡ oryginalnÄ… Å›cieÅ¼kÄ™ dÅºwiÄ™kowÄ… z wyeksportowanym wideo, potrzebuje narzÄ™dzia **FFmpeg**:
+
+1. Program przy starcie automatycznie sprawdza, czy w jego katalogu znajduje siÄ™ plik `ffmpeg.exe` (lub czy FFmpeg jest zainstalowany w systemowej zmiennej `PATH`).
+2. JeÅ›li pliku brakuje, wyÅ›wietli siÄ™ okno z bezpoÅ›rednimi odnoÅ›nikami do pobrania:
+   * [Oficjalna paczka GPL (BtbN Releases)](https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip)
+   * [Alternatywna paczka Gyan.dev](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z)
+3. **Instalacja:** Wystarczy rozpakowaÄ‡ archiwum i skopiowaÄ‡ pojedynczy plik **`ffmpeg.exe`** bezpoÅ›rednio do folderu z programem `FaceBlurTool.exe`.
+4. *Uwaga:* W przypadku braku FFmpeg program nadal wyeksportuje zamazany plik wideo, lecz bÄ™dzie on pozbawiony Å›cieÅ¼ki dÅºwiÄ™kowej.
+
+---
+
+## Pobieranie i uruchomienie (.EXE)
+
+Aplikacja jest dystrybuowana jako **gotowy plik wykonywalny Windows**:
+
+1. Pobierz plik **`FaceBlur.exe`** z zakÅ‚adki **Releases**.
+2. UmieÅ›Ä‡ plik w dowolnym folderze na dysku (zalecane umieszczenie obok pliku `ffmpeg.exe`).
+3. Uruchom program dwuklikiem â€“ silniki AI sÄ… wbudowane lub Å‚adowane z folderu programu, program nie wymaga instalowania Å›rodowiska Python.
+
+---
+
+## Uruchomienie ze ÅºrÃ³deÅ‚ (Python)
+
+JeÅ›li wolisz uruchomiÄ‡ aplikacjÄ™ w czystym Å›rodowisku Pythona (zalecany Python 3.10 â€“ 3.13):
 
 ```bash
-# 1. Klonowanie repozytorium
+# 1. Sklonuj repozytorium
 git clone https://github.com/marek7400/face-blur-tool.git
 cd face-blur-tool
 
-# 2. Instalacja zale¿noœci
+# 2. Zainstaluj zaleÅ¼noÅ›ci
 pip install -r requirements.txt
 
-# 3. Uruchomienie aplikacji
-python face_blur_v35_multi_model.py
-
-lub zainstaluj Python (3.13) i uruchom plik run_v35_multi-model.bat
+# 3. Uruchom aplikacjÄ™
+python face_blur_app.py
 ```
 
-Wymagania w `requirements.txt`:
+ZawartoÅ›Ä‡ `requirements.txt`:
 ```text
 opencv-contrib-python>=4.8.0
 Pillow>=9.0.0
@@ -77,130 +109,127 @@ numpy
 
 ---
 
-## ?? Szczegó³owy opis funkcji i interfejsu
+## SzczegÃ³Å‚owy opis interfejsu
 
-### 1. Górny pasek narzêdzi
-* **Wybierz wideo:** Otwiera plik filmowy, ³aduje klatki i konfiguruje oœ czasu.
-* **Wybierz zdjêcie:** Wycisza oœ czasu i prze³¹cza program w tryb obróbki pojedynczego zdjêcia w pe³nej rozdzielczoœci.
-* **Model (Lista rozwijana):** Prze³¹czanie w locie silnika AI (YuNet, SCRFD 500M, SCRFD 2.5G, YOLO-Face Nano).
-* **Wska¿...:** Pozwala wskazaæ z dysku dowolny inny plik `.onnx` zgodny z architektur¹.
-* **Zama¿ wszystkie zielone:** Zaczyna œledziæ wszystkie twarze wykryte przez AI na bie¿¹cej klatce jednym klikniêciem.
-* **? PAUSE:** Zamyka aktywny segment twarzy na poprzedniej klatce. Na bie¿¹cej klatce i kolejnych rozmycie zostaje wy³¹czone.
-* **? RESUME:** Wznawia œledzenie twarzy z listy od bie¿¹cej klatki (tworzy nowy segment).
-* **CIRCLE (owal):** Zmienia kszta³t maski z prostok¹tnej na owaln¹ (elipsa).
-* **BLACKBOX:** Zamiast rozmycia nak³ada pe³ne zaczernienie (cenzurê).
-* **LINE (wielok¹t):** W³¹cza tryb obrysowywania kszta³tów wieloma liniami.
-* **Stop gdy zgubi:** Zatrzymuje œledzenie danej twarzy, jeœli obiekt wykona zbyt gwa³towny skok lub zniknie z kadru.
-* **?? ZOOM 1:1:** Natychmiast resetuje powiêkszenie i centruje ca³y kadr.
-* **Cofnij:** Cofa ostatnio dodany segment lub przejêcie œledzenia.
-* **Wyczyœæ:** Resetuje wszystkie ramki i ca³¹ oœ czasu do zera.
-* **Eksportuj / Zapisz:** Zapisuje gotowy film `.mp4` lub przetworzone zdjêcie.
+### 1. GÃ³rny pasek narzÄ™dzi
+* **Wybierz wideo:** Otwiera plik filmowy, Å‚aduje klatki i konfiguruje oÅ› czasu.
+* **Wybierz zdjÄ™cie:** Wycisza oÅ› czasu i przeÅ‚Ä…cza program w tryb obrÃ³bki pojedynczego zdjÄ™cia.
+* **Model (Lista rozwijana):** PrzeÅ‚Ä…czanie w locie silnika AI (YuNet, SCRFD 500M, SCRFD 2.5G, YOLO-Face Nano).
+* **WskaÅ¼...:** Pozwala wskazaÄ‡ plik `.onnx` z dysku.
+* **ZamaÅ¼ wszystkie zielone:** Zaczyna Å›ledziÄ‡ wszystkie twarze wykryte przez AI na bieÅ¼Ä…cej klatce jednym klikniÄ™ciem.
+* **? PAUSE:** KoÅ„czy Å›ledzenie twarzy na poprzedniej klatce (wyÅ‚Ä…cza maskowanie od bieÅ¼Ä…cej klatki).
+* **? RESUME:** Wznawia Å›ledzenie twarzy od bieÅ¼Ä…cej klatki.
+* **Stop gdy zgubi:** Zatrzymuje Å›ledzenie danej twarzy w razie gwaÅ‚townego skoku lub opuszczenia kadru.
+* ** ZOOM 1:1:** Resetuje powiÄ™kszenie i wyÅ›rodkowuje widok.
+* **Cofnij:** Cofa ostatnio utworzony segment Å›ledzenia.
+* **WyczyÅ›Ä‡:** Resetuje wszystkie trackery i czyÅ›ci oÅ› czasu.
+* ** / :** Natychmiastowe przeÅ‚Ä…czenie motywu ciemnego/jasnego.
+* **Eksportuj / Zapisz:** Uruchamia proces renderowania z oknem postÄ™pu.
 
-### 2. Oœ czasu (Dó³ ekranu)
-* **`|<< Pocz¹tek`:** B³yskawiczny skok do klatki `0`.
-* **Suwak osi czasu:** Przesuwanie klatek. Przy szybkim przeci¹ganiu program wyœwietla podgl¹d lekki, a pe³ne przeliczenie wykonuje po zwolnieniu przycisku myszy.
-* **`Koniec >>|`:** B³yskawiczny skok do ostatniej klatki filmu.
-* **Pole numeryczne klatki:** Pozwala wpisaæ numer klatki i wcisn¹æ `Enter`.
-* **Si³a rozmycia:** P³ynna regulacja od 15 do 151 (steruje stopniem rozmycia Gaussa lub rozmiarem klocków w PIXEL MODE).
-* **PIXEL MODE:** Prze³¹cza rozmycie na styl pikselowej mozaiki retro.
-* **Tolerancja skoku (px):** Maksymalny dopuszczalny ruch twarzy miêdzy klatkami, po przekroczeniu którego tracker uznaje obiekt za zgubiony (ochrona przed dryfem).
+### 2. Dolny panel kontrolny
+* **OÅ› czasu:** PÅ‚ynna nawigacja po klatkach (`|<< PoczÄ…tek`, suwak z numerem klatki, `Koniec >>|`, pole bezpoÅ›redniego wpisu).
+* **Suwak â€Rozmycieâ€ (0â€“100):** Regulacja siÅ‚y rozmycia Gaussa lub rozmiaru blokÃ³w mozaiki.
+* **Suwak â€Wtapianieâ€ (0â€“100):** PÅ‚ynne zmiÄ™kczanie krawÄ™dzi maski (brak ostrych odciÄ™Ä‡).
+* **Suwak â€Tolerancja skokuâ€ (0â€“300):** Maksymalny dopuszczalny ruch obiektu w pikselach miÄ™dzy klatkami (zabezpieczenie przed dryfem trackera CSRT).
+* **PrzeÅ‚Ä…czniki ksztaÅ‚tÃ³w i trybÃ³w:**
+  * `CIRCLE (owal)` â€“ maska w ksztaÅ‚cie elipsy.
+  * `BLACKBOX` â€“ peÅ‚na cenzura czarnÄ… plamÄ….
+  * `LINE (wielokÄ…t)` â€“ rÄ™czne wyznaczanie punktÃ³w nieregularnego ksztaÅ‚tu.
+  * `PIXEL MODE` â€“ zamiana rozmycia Gaussa na pikselozÄ™ retro.
 
-### 3. Panel boczny (Prawa strona)
-* Informacje o aktywnym modelu AI, rozdzielczoœci i liczbie klatek.
-* Przewijalna lista wszystkich segmentów (`Twarz X [ID Y]`).
-* Przyciski przy ka¿dym segmencie:
-  * **`ID`** – przenosi suwak dok³adnie do klatki startowej danego segmentu.
-  * **`X`** – trwale usuwa wskazany segment.
-
----
-
-## ?? Metody zaznaczania i edycji
-
-```
--¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¬
-- AUTO: Kliknij lewym zielon¹ ramkê AI                                  -
-- MANUAL: Naciœnij lewy i przeci¹gnij prostok¹t/owal                    -
-- LINE: Zaznacz 'LINE', klikaj punkty, zakoñcz 2x klikniêciem           -
-- PRZESUNIÊCIE: Chwyæ za ¿ó³t¹ ikonê 4 strza³ek na œrodku ramki          -
-- ROZMIAR: Chwyæ za krawêdŸ lub naro¿nik ramki                           -
-L¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦-
-```
-
-* **Korekta w trakcie filmu (Handover):** Jeœli na klatce 100 tracker lekko zjecha³ z twarzy, wystarczy klikn¹æ now¹ zielon¹ ramkê AI lub narysowaæ now¹ rêcznie w pobli¿u. Program automatycznie zakoñczy stary segment na klatce 99 i zacznie nowy od klatki 100.
-* **Przesuwanie i skalowanie ramki:** 
-  * NajedŸ na œrodek dowolnej aktywnej ramki – pojawi siê ikona z 4 strza³kami. Wciœnij lewy przycisk i przesuñ.
-  * NajedŸ na krawêdŸ lub naro¿nik – kursor zmieni siê w strza³ki skalowania. Wciœnij lewy przycisk i rozci¹gnij/zmniejsz obszar.
-  * Dzia³a to równie¿ przy w³¹czonym trybie `LINE` (kontrole edycji maj¹ pierwszeñstwo przed stawianiem nowych punktów).
+### 3. Prawy panel boczny
+* Status aktywnego silnika AI oraz parametry wczytanego pliku.
+* Przewijalna lista segmentÃ³w (`Twarz X [ID Y]`):
+  * **`IDÅ¹`** â€“ przenosi oÅ› czasu do klatki startowej wybranego segmentu.
+  * **`X`** â€“ bezpowrotnie usuwa dany segment Å›ledzenia.
 
 ---
 
-## ? Skróty klawiszowe i sterowanie mysz¹
+## Metody zaznaczania i edycji masek
+
+```
+-Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¬
+- â€¢ AUTO: Kliknij lewym przyciskiem myszy w zielonÄ… ramkÄ™ AI             -
+- â€¢ MANUAL: PrzeciÄ…gnij lewym przyciskiem, tworzÄ…c prostokÄ…t/owal        -
+- â€¢ LINE: Zaznacz 'LINE', klikaj punkty, zakoÅ„cz 2x klikniÄ™ciem          -
+- â€¢ PRZESUNIÄ˜CIE: ChwyÄ‡ za Å¼Ã³Å‚tÄ… ikonÄ™ celownika na Å›rodku ramki         -
+- â€¢ ROZMIAR: ChwyÄ‡ za krawÄ™dÅº lub naroÅ¼nik ramki                         -
+LÂ¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦-
+```
+
+* **Korekta pozycji (Handover):** JeÅ›li tracker zjedzie z twarzy na dalszych klatkach, wystarczy kliknÄ…Ä‡ nowÄ… zielonÄ… ramkÄ™ lub narysowaÄ‡ nowÄ…. Program zarchiwizuje dotychczasowÄ… trasÄ™ i pÅ‚ynnie podejmie Å›ledzenie od nowej pozycji.
+* **Interaktywne uchwyty:** Na aktywnej ramce dostÄ™pne sÄ… punkty zmiany rozmiaru oraz centralny uchwyt przesuwania â€“ dziaÅ‚ajÄ… one niezaleÅ¼nie od powiÄ™kszenia (Zoom).
+
+---
+
+## SkrÃ³ty klawiszowe i sterowanie myszÄ…
 
 | Klawisz / Przycisk | Akcja |
 | :--- | :--- |
-| **Lewy przycisk myszy** | Klikniêcie w zielon¹ ramkê (AUTO) / Przeci¹gniêcie (MANUAL) |
-| **Lewy przycisk (œrodek ramki)** | Chwycenie i przesuniêcie ca³ej ramki |
-| **Lewy przycisk (krawêdŸ ramki)** | Zmiana rozmiaru ramki w wybranym kierunku |
-| **Podwójny klik (Lewy)** | Zamkniêcie i utworzenie wielok¹ta w trybie `LINE` |
-| **Prawy przycisk myszy (klik)** | Usuniêcie pojedynczej ramki pod kursorem (tak¿e anulowanie rysowania `LINE`) |
-| **Prawy przycisk myszy (przeci¹gniêcie)** | **Chwycenie i przesuwanie obrazu (Pan)** przy powiêkszeniu (`Zoom > 1.0x`) |
-| **Kó³ko myszy (Scroll)** | P³ynny Zoom w stronê kursora (do 12x) / Oddalanie |
-| **Œrodkowy przycisk myszy / Shift + LPM** | Alternatywne przesuwanie powiêkszonego obrazu (Pan) |
-| **Strza³ka w prawo (`›`)** | Nastêpna klatka (+1) |
-| **Strza³ka w lewo (`‹`)** | Poprzednia klatka (-1) |
-| **Shift + Strza³ka w prawo** | Skok w przód o 10 klatek (+10) |
-| **Shift + Strza³ka w lewo** | Skok w ty³ o 10 klatek (-10) |
-| **Strza³ka w górê (`^`)** | Skok w przód o 30 klatek (+30) |
-| **Strza³ka w dó³ (`¡`)** | Skok w ty³ o 30 klatek (-30) |
-| **Klawisz `Delete`** | Cofniêcie / usuniêcie ostatniego segmentu |
+| **Lewy przycisk myszy (LPM)** | KlikniÄ™cie w ramkÄ™ AI (AUTO) / PrzeciÄ…gniÄ™cie (MANUAL) |
+| **LPM (Å›rodek ramki)** | PrzesuniÄ™cie poÅ‚oÅ¼enia maski |
+| **LPM (krawÄ™dÅº / naroÅ¼nik)** | Zmiana szerokoÅ›ci i wysokoÅ›ci maski |
+| **PodwÃ³jny klik (LPM)** | ZamkniÄ™cie wielokÄ…ta w trybie `LINE` |
+| **Prawy przycisk myszy (klik)** | UsuniÄ™cie maski pod kursorem / Anulowanie punktÃ³w `LINE` |
+| **Prawy przycisk myszy (przeciÄ…gniÄ™cie)** | **Przesuwanie widoku (Pan)** przy powiÄ™kszeniu (`Zoom > 1.0x`) |
+| **KÃ³Å‚ko myszy (Scroll)** | PÅ‚ynny Zoom w stronÄ™ kursora (do 12x) / Oddalanie |
+| **Åšrodkowy przycisk myszy / Shift + LPM** | Alternatywne przesuwanie powiÄ™kszonego kadru (Pan) |
+| **StrzaÅ‚ka w prawo (`â€º`)** | NastÄ™pna klatka (+1) |
+| **StrzaÅ‚ka w lewo (`â€¹`)** | Poprzednia klatka (-1) |
+| **Shift + StrzaÅ‚ka w prawo** | Skok w przÃ³d o 10 klatek (+10) |
+| **Shift + StrzaÅ‚ka w lewo** | Skok w tyÅ‚ o 10 klatek (-10) |
+| **StrzaÅ‚ka w gÃ³rÄ™ (`^`)** | Skok w przÃ³d o 30 klatek (+30) |
+| **StrzaÅ‚ka w dÃ³Å‚ (`Ë‡`)** | Skok w tyÅ‚ o 30 klatek (-30) |
+| **Klawisz `Delete`** | UsuniÄ™cie ostatniego segmentu |
 
 ---
 
-## ?? Przegl¹d modeli AI (Detektory twarzy)
+## PrzeglÄ…d modeli AI (Detektory twarzy)
 
-Program pozwala na dynamiczny wybór spoœród 4 modeli ONNX:
+MoÅ¼liwoÅ›Ä‡ wyboru silnika detekcji w zaleÅ¼noÅ›ci od specyfiki materiaÅ‚u i mocy procesora:
 
 ```
-[ YuNet ] ¦¦¦¦¦¦¦¦¦¦ Lekki, wbudowany w OpenCV (~300 KB), bardzo szybki na CPU
-[ SCRFD 500M ] ¦¦¦¦¦ Zoptymalizowany pod CPU (~2.4 MB), demon prêdkoœci
-[ SCRFD 2.5G ] ¦¦¦¦¦ Najlepszy balans dok³adnoœci do prêdkoœci (~3.2 MB)
-[ YOLO-Face Nano ] ¦ Œwietny przy profilach 90° i trudnych k¹tach (~6.0 MB)
+[ YuNet ] Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦ Lekki, zintegrowany z OpenCV (~335 KB), bardzo szybki na CPU
+[ SCRFD 500M ] Â¦Â¦Â¦Â¦Â¦ Bardzo szybki (~2.4 MB), idealny do maÅ‚ych twarzy w tÅ‚umie
+[ SCRFD 2.5G ] Â¦Â¦Â¦Â¦Â¦ Najlepszy stosunek precyzji do obciÄ…Å¼enia procesora (~3.2 MB)
+[ YOLO-Face Nano ] Â¦ NiezrÃ³wnany przy profilach 90Â°, nakryciach gÅ‚owy i trudnych kÄ…tach (~6.0 MB)
 ```
 
-| Model | Waga | Rekomendowane zastosowanie |
+| Model | Waga | Zastosowanie |
 | :--- | :--- | :--- |
-| **YuNet** | ~335 KB | Szybkie wykrywanie twarzy frontalnych i lekko obróconych. |
-| **SCRFD 500M** | ~2.4 MB | Bardzo s³abe procesory; sceny z wieloma ma³ymi twarzami. |
-| **SCRFD 2.5G** | ~3.2 MB | **Zalecany domyœlny:** znakomity stosunek dok³adnoœci do szybkoœci na CPU. |
-| **YOLO-Face (Nano)** | ~6.0 MB | Twarze w pe³nym profilu (90°), mocno odchylone g³owy, czapki i okulary. |
-| **Haar Cascade** | ~900 KB | Tradycyjny algorytm OpenCV dzia³aj¹cy jako automatyczny fallback w razie braku plików `.onnx`. |
+| **YuNet** | ~335 KB | Szybkie wykrywanie twarzy frontalnych i lekko obrÃ³conych. |
+| **SCRFD 500M** | ~2.4 MB | SÅ‚absze procesory, ujÄ™cia szerokokÄ…tne z duÅ¼Ä… liczbÄ… osÃ³b. |
+| **SCRFD 2.5G** | ~3.2 MB | **Rekomendowany:** optymalny balans skutecznoÅ›ci i prÄ™dkoÅ›ci. |
+| **YOLO-Face (Nano)** | ~6.0 MB | Twarze w profilu (90Â°), mocne przechyÅ‚y, okulary i maski. |
+| **Haar Cascade** | ~900 KB | Wbudowany silnik awaryjny (fallback) na wypadek braku plikÃ³w ONNX. |
 
 ---
 
-## ?? Tryby zamazywania i kszta³ty
+## Tryby zamazywania i ksztaÅ‚ty
 
-1. **Gaussian Blur (Domyœlny):** P³ynne, estetyczne rozmycie plam¹ Gaussa. Si³ê ustala suwak `Si³a rozmycia`.
-2. **PIXEL MODE:** Mozaika pikselowa. Rozmiar pikseli roœnie wraz z wartoœci¹ suwaka rozmycia.
-3. **BLACKBOX:** Klasyczna, solidna cenzura czarnym prostok¹tem lub owalem.
-4. **Maska CIRCLE (Owal):** Twarze maskowane s¹ elips¹ wyciêt¹ precyzyjnie w kadrze.
-5. **Maska LINE (Wielok¹t):** Rêcznie zdefiniowany wielok¹t dopasowany do nieregularnych kszta³tów (np. tatua¿, tablica rejestracyjna, specyficzny kadr).
+1. **Gaussian Blur:** Klasyczne, gÅ‚adkie rozmycie Gaussa o sile regulowanej suwakiem *Rozmycie*.
+2. **Feathering (Wtapianie):** ZmiÄ™kcza krawÄ™dzie rozmycia, eliminujÄ…c odcinajÄ…ce siÄ™ linie maski.
+3. **PIXEL MODE:** Pikselowa mozaika. WielkoÅ›Ä‡ blokÃ³w dopasowuje siÄ™ do suwaka rozmycia.
+4. **BLACKBOX:** KryjÄ…ca czarna cenzura (prostokÄ…tna lub eliptyczna).
+5. **Maska CIRCLE (Owal):** Naturalne, owalne dopasowanie maski do obrysu gÅ‚owy.
+6. **Maska LINE (WielokÄ…t):** Precyzyjne obrysowanie nieregularnych elementÃ³w (tatuaÅ¼e, logotypy, tablice rejestracyjne).
 
 ---
 
-## ? Rozwi¹zywanie problemów (FAQ)
+## RozwiÄ…zywanie problemÃ³w (FAQ)
 
-#### 1. Czy program wymaga zewnêtrznej karty graficznej?
-Nie. Wszystkie algorytmy i sieci neuronowe ONNX zosta³y zoptymalizowane pod instrukcje wektorowe procesora (CPU). Program dzia³a p³ynnie nawet na zintegrowanych uk³adach graficznych i starszych komputerach.
+#### 1. Dlaczego wyeksportowany film nie ma dÅºwiÄ™ku?
+Upewnij siÄ™, Å¼e plik `ffmpeg.exe` znajduje siÄ™ w tym samym folderze co plik wykonywalny programu. Program poinformuje o braku pliku stosownym komunikatem przy starcie.
 
-#### 2. Windows Defender / SmartScreen wyœwietla ostrze¿enie przy uruchomieniu pliku .EXE
-Jest to standardowe zachowanie filtru Windows SmartScreen dla nowo skompilowanych plików `.exe` bez p³atnego certyfikatu cyfrowego EV:
-* Kliknij **„Wiêcej informacji”**, a nastêpnie **„Uruchom mimo to”**.
-* Program nie zawiera ¿adnego z³oœliwego kodu (kod Ÿród³owy jest w 100% jawny i otwarty).
+#### 2. Windows SmartScreen wyÅ›wietla ostrzeÅ¼enie przy uruchomieniu pliku .EXE
+Jest to standardowe zachowanie filtru Windows Defender dla nowo skompilowanych aplikacji bez pÅ‚atnego certyfikatu:
+* Kliknij **â€WiÄ™cej informacjiâ€**, a nastÄ™pnie wybierz **â€Uruchom mimo toâ€**.
+* Aplikacja jest w 100% bezpieczna, nie Å‚Ä…czy siÄ™ z internetem i dziaÅ‚a wyÅ‚Ä…cznie lokalnie na Twoim komputerze.
 
-#### 3. Program nie wykrywa twarzy obróconej ca³kowicie bokiem (profil 90°)
-* Zmieñ model z listy na **YOLO-Face (Nano)** lub **SCRFD 2.5G** – radz¹ sobie ze skrajnymi obrotami znacznie lepiej ni¿ YuNet.
-* Alternatywnie: po prostu narysuj ramkê rêcznie (przeci¹gaj¹c lewym przyciskiem myszy) – od tego momentu tracker CSRT poprowadzi twarz samodzielnie.
+#### 3. PostaÄ‡ obraca siÄ™ tyÅ‚em lub profilem i tracker gubi twarz
+* PrzeÅ‚Ä…cz model na **YOLO-Face (Nano)** lub **SCRFD 2.5G**.
+* ZwiÄ™ksz wartoÅ›Ä‡ suwaka **Tolerancja skoku** (np. do 180â€“220 px).
+* W razie zerwania Å›ledzenia zatrzymaj film, narysuj ramkÄ™ rÄ™cznie (LPM) i kontynuuj odtwarzanie.
 
-#### 4. Jak cofn¹æ siê w filmie bez zacinania obrazu?
-Dziêki wdro¿eniu pamiêci trajektorii (`traj cache`) cofanie w wideo jest natychmiastowe. Pamiêtaj jednak, ¿e podczas bardzo szybkiego przesuwania suwaka w przód program celowo nie przelicza AI dla ka¿dej klatki poœredniej – zwolnij suwak w docelowym miejscu, aby program dokona³ pe³nej analizy.
-```
+#### 4. Gdzie zapisywane sÄ… moje ustawienia suwakÃ³w?
+WartoÅ›ci suwakÃ³w (*Rozmycie*, *Wtapianie*, *Tolerancja skoku*) sÄ… automatycznie zapisywane w pliku `settings.json` w folderze programu przy kaÅ¼dym zamkniÄ™ciu okna.
