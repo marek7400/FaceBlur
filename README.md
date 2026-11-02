@@ -235,3 +235,5 @@ Jest to standardowe zachowanie filtru Windows Defender dla nowo skompilowanych a
 
 #### 4. Gdzie zapisywane są moje ustawienia suwaków?
 Wartości suwaków (*Rozmycie*, *Wtapianie*, *Tolerancja skoku*) są automatycznie zapisywane w pliku `settings.json` w folderze programu przy każdym zamknięciu okna.
+
+#### 5. Jak w podglądzie nagle pojawiają się zaznaczenia w przypadkowych miejscach to naciskamy RESUME (przestaje nam śledzić) i rysujemy ręcznie obrys na twarzy. Od tego momentu śledzi to co narysowaliśmy.
