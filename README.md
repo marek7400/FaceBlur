@@ -11,9 +11,6 @@
 Nowoczesne, lekkie i w 100% lokalne narzędzie dla systemu Windows do automatycznego i ręcznego zamazywania/anonimizacji **wielu twarzy jednocześnie na wideo oraz statycznych zdjęciach**.
 
 Aplikacja została zoptymalizowana pod kątem pracy na standardowych procesorach (CPU) bez potrzeby posiadania dedykowanej karty graficznej. Posiada wbudowany bufor trajektorii (brak zacięć przy cofaniu wideo), 4 zaawansowane silniki detekcji AI ONNX, płynny zoom z przesuwaniem kadru (Pan), miękkie wtapianie krawędzi (Feathering), pełne zachowanie oryginalnego dźwięku (FFmpeg), tryb ciemny/jasny oraz możliwość tworzenia masek prostokątnych, owalnych i wielokątnych (`LINE`).
-
-<img width="1920" height="1159" alt="FaceBlur" src="https://github.com/user-attachments/assets/79e161cd-97b7-4bf5-aa00-5fb8b593494a" />
-
 ---
 
 FaceBlur v37:
@@ -39,6 +36,7 @@ FaceBlur v37:
 
 -poprawiono rozjeżdżanie się zaznaczenia z rozmyciem
 
+<img width="1918" height="1154" alt="FacelBlur_v1 37" src="https://github.com/user-attachments/assets/0c89b893-eb9a-4dd5-94fc-4ac7abe8fb98" />
 
 ## Spis treści
 1. [Nowości w wersji 1.36](#-nowości-w-wersji-136)
@@ -54,6 +52,8 @@ FaceBlur v37:
 11. [Rozwiązywanie problemów (FAQ)](#-rozwiązywanie-problemów-faq)
 
 ---
+
+<img width="1920" height="1159" alt="FaceBlur" src="https://github.com/user-attachments/assets/79e161cd-97b7-4bf5-aa00-5fb8b593494a" />
 
 ##  Nowości w wersji 1.36
 
