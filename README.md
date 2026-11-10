@@ -13,7 +13,7 @@ Nowoczesne, lekkie i w 100% lokalne narzędzie dla systemu Windows do automatycz
 Aplikacja została zoptymalizowana pod kątem pracy na standardowych procesorach (CPU) bez potrzeby posiadania dedykowanej karty graficznej. Posiada wbudowany bufor trajektorii (brak zacięć przy cofaniu wideo), 4 zaawansowane silniki detekcji AI ONNX, płynny zoom z przesuwaniem kadru (Pan), miękkie wtapianie krawędzi (Feathering), pełne zachowanie oryginalnego dźwięku (FFmpeg), tryb ciemny/jasny oraz możliwość tworzenia masek prostokątnych, owalnych i wielokątnych (`LINE`).
 ---
 
-# FaceBlur v37:
+# FaceBlur v1.37:
 
 -dodano przycisk "Zamaż cały film" (automatycznie)
 
