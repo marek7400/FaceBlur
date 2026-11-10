@@ -16,6 +16,30 @@ Aplikacja została zoptymalizowana pod kątem pracy na standardowych procesorach
 
 ---
 
+FaceBlur v37:
+-dodano przycisk "Zamaż cały film" (automatycznie)
+
+-dodano "Zrób zrzut ekranu" (z rozmyciem lub bez)
+
+-dodano Pokaż nazwę wczytanego filmu lub zdjęcia
+
+-dodano Dokładny licznik filmu
+
+-dodano Przycisk PLAY
+
+-dodano Suwak do sterowania prędkością lub pole do wpisu wartości
+
+-dodano Przyciski Eksportuj OD-Eksportuj DO i Kasuj zaznaczenie
+
+(możliwość eksportu kawałka filmu, jak się zaznaczy kilka kawałków to skleja je w film)
+
+(zaznaczenie znaczników na zielono nad suwakiem klatek)
+
+(kasować można jak ustawi się suwak na zielonym polu)
+
+-poprawiono rozjeżdżanie się zaznaczenia z rozmyciem
+
+
 ## Spis treści
 1. [Nowości w wersji 1.36](#-nowości-w-wersji-136)
 2. [Główne cechy](#-główne-cechy)
