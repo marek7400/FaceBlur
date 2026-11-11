@@ -1,19 +1,13 @@
-<img width="1918" height="1154" alt="FacelBlur_v1 37" src="https://github.com/user-attachments/assets/2e8a6614-1464-4d5b-a694-e723dd27b551" />
+<img width="1918" height="1154" alt="FacelBlur_v1 37" src="https://github.com/user-attachments/assets/6c2844e6-459d-4ebf-a3c7-731095e93b4c" />
 
 
 # Face Blur Tool
 
-Narzędzie do zamazywania twarzy na wideo i zdjęciach. Pracuje lokalnie, na Twoim komputerze. Wykrywa twarze modelem AI, śledzi je klatka po klatce i nakłada rozmycie, pikselozę albo czarny prostokąt / elipsę.
+Narzędzie desktopowe (Python + Tkinter + OpenCV) do ręcznego i półautomatycznego zamazywania twarzy na wideo i zdjęciach.
 
-Możesz działać na trzy sposoby:
+Nie zamazuje „wszystkiego, co wygląda jak twarz, i już”. Ty decydujesz, która twarz ma być zamazana, od której klatki, do której klatki, jakim kształtem i jak mocno — a program pomaga Ci to śledzić z klatki na klatkę.
 
-1. **Ręcznie, jedna twarz na raz** - klikasz twarz albo rysujesz ramkę.
-2. **Półautomatycznie** - klikasz „Zamaż wszystkie zielone na bieżącej klatce", a potem poprawiasz ręcznie.
-3. **Automatycznie, cały film** - klikasz „Zamaż cały film (AI)" i potem czyścisz błędy.
-
-Program nie wysyła wideo do internetu. Wszystko dzieje się lokalnie.
-
-Repozytorium autora: https://github.com/marek7400
+> **Zasada działania w jednym zdaniu:** detektor AI znajduje kandydatów (zielone ramki), Ty zatwierdzasz twarz do zamazania (klik / przeciągnięcie / przycisk), a tracker CSRT prowadzi zamazany obszar przez kolejne klatki, dopóki go nie przerwiesz, nie usuniesz albo tracker go nie zgubi.
 
 ---
 
@@ -21,690 +15,1089 @@ Repozytorium autora: https://github.com/marek7400
 
 - [Co potrafi program](#co-potrafi-program)
 - [Wymagania i instalacja](#wymagania-i-instalacja)
-- [Pliki modeli AI i FFmpeg](#pliki-modeli-ai-i-ffmpeg)
+- [Pliki modeli AI](#pliki-modeli-ai)
 - [Szybki start](#szybki-start)
-- [Układ okna](#układ-okna)
-- [Górny pasek 1 - import, model, detekcja, eksport](#górny-pasek-1---import-model-detekcja-eksport)
-- [Górny pasek 2 - śledzenie, zoom, edycja](#górny-pasek-2---śledzenie-zoom-edycja)
-- [Podgląd wideo - myszka i rysowanie](#podgląd-wideo---myszka-i-rysowanie)
-- [Panel prawy - lista twarzy i segmentów](#panel-prawy---lista-twarzy-i-segmentów)
-- [Sterowanie odtwarzaniem](#sterowanie-odtwarzaniem)
-- [Oś czasu i znaczniki eksportu](#oś-czasu-i-znaczniki-eksportu)
-- [Dolny pasek - suwaki i kształt zamazania](#dolny-pasek---suwaki-i-kształt-zamazania)
-- [Tryby dodawania twarzy: AUTO, MANUAL, LINE](#tryby-dodawania-twarzy-auto-manual-line)
+- [Jak wygląda interfejs](#jak-wygląda-interfejs)
+- [Legenda kolorów ramek](#legenda-kolorów-ramek)
+- [Opis wszystkich przycisków i pól — pasek górny, wiersz 1](#opis-wszystkich-przycisków-i-pól--pasek-górny-wiersz-1)
+- [Opis wszystkich przycisków — pasek górny, wiersz 2](#opis-wszystkich-przycisków--pasek-górny-wiersz-2)
+- [Panel boczny po prawej — lista twarzy](#panel-boczny-po-prawej--lista-twarzy)
+- [Sterowanie odtwarzaniem i skakaniem po klatkach](#sterowanie-odtwarzaniem-i-skaniem-po-klatkach)
+- [Oś czasu i znaczniki fragmentów do eksportu](#oś-czasu-i-znaczniki-fragmentów-do-eksportu)
+- [Suwaki i przełączniki parametrów zamazania](#suwaki-i-przełączniki-parametrów-zamazania)
+- [Mysz, zoom i rysowanie](#mysz-zoom-i-rysowanie)
+- [Ręczne kasowanie zamazania](#ręczne-kasowanie-zamazania)
+- [Ręczna edycja ramki — zmiana położenia i rozmiaru chwytając myszką](#ręczna-edycja-ramki--zmiana-położenia-i-rozmiaru-chwytając-myszką)
+- [Skróty klawiaturowe](#skróty-klawiaturowe)
 - [Jak działa śledzenie](#jak-działa-śledzenie)
-- [Eksport](#eksport)
+- [Eksport wideo i zdjęć](#eksport-wideo-i-zdjęć)
 - [Zrzut ekranu](#zrzut-ekranu)
-- [Ustawienia zapisywane automatycznie](#ustawienia-zapisywane-automatycznie)
-- [Skróty klawiszowe](#skróty-klawiszowe)
-- [WAŻNE: Niepotrzebne zamazane obszary w losowych miejscach](#ważne-niepotrzebne-zamazane-obszary-w-losowych-miejscach)
-- [WAŻNE: Twarz nadal śledzona, ale już odwrócona](#ważne-twarz-nadal-śledzona-ale-już-odwrócona)
-- [Kontrola przed eksportem - checklista](#kontrola-przed-eksportem---checklista)
+- [⚠️ PROBLEM 1: Niepotrzebne zamazane obszary w losowych miejscach](#-problem-1-niepotrzebne-zamazane-obszary-w-losowych-miejscach)
+- [⚠️ PROBLEM 2: Twarz nadal śledzona, ale już odwrócona — czy dalej zamazywać?](#-problem-2-twarz-nadal-śledzona-ale-już-odwrócona--czy-dalej-zamazywać)
+- [Dobre praktyki — kolejność pracy, która oszczędza poprawki](#dobre-praktyki--kolejność-pracy-która-oszczędza-poprawki)
 - [Rozwiązywanie problemów](#rozwiązywanie-problemów)
+- [Plik `settings.json`](#plik-settingsjson)
+- [Ograniczenia](#ograniczenia)
 
 ---
 
 ## Co potrafi program
 
-- Wczytuje wideo: `.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`.
-- Wczytuje zdjęcie: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`.
-- Wykrywa twarze czterema modelami AI: YuNet, SCRFD 500M, SCRFD 2.5G, YOLO-Face (Nano). Gdy brak pliku modelu, używa zapasowego detektora Haar Cascade.
-- Śledzi każdą wybraną twarz osobno, jako osobny segment z własnym zakresem klatek.
-- Pozwala dodać twarz kliknięciem, przeciągnięciem ramki albo narysowaniem wielokąta (LINE).
-- Pozwala przesuwać i zmieniać rozmiar już dodanej ramki w dowolnej klatce.
-- Pozwala podzielić śledzenie na segmenty: uciąć je w danym miejscu i wznowić później.
-- Pozwala usunąć jeden segment, jedną twarz albo wszystko.
-- Zamazuje jako: rozmycie Gaussa, pikselozę (PIXEL), czarny prostokąt / elipsę (BLACKBOX).
-- Wtapia krawędzie zamazania (feather), żeby nie było ostrej granicy.
-- Eksportuje cały film albo tylko wybrane fragmenty (znaczniki OD / DO), z zachowaniem dźwięku przez FFmpeg.
-- Eksportuje zdjęcie z zamazanymi twarzami.
-- Robi zrzut bieżącej klatki z zamazaniem albo bez.
-- Zapamiętuje trzy ustawienia: siłę rozmycia, wtapianie i tolerancję skoku.
+- Wczytywanie wideo: `.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`.
+- Wczytywanie zdjęć: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`.
+- Wykrywanie twarzy 4 modelami AI (do wyboru) + awaryjnie Haar Cascade.
+- Trzy sposoby dodania zamazania: **AUTO** (klik na wykrytą twarz), **MANUAL** (ręczne narysowanie prostokąta), **LINE** (ręczne narysowanie wielokąta).
+- Śledzenie zamazanej twarzy przez film trackerem CSRT z ponownym zakotwiczeniem przez AI.
+- Przerwanie / wznowienie śledzenia w dokładnie wybranej klatce.
+- Ręczne przesuwanie i zmiana rozmiaru zamazanego obszaru na dowolnej klatce (z podziałem segmentu).
+- Usuwanie pojedynczego zamazania: z listy, prawym przyciskiem myszy albo przyciskiem **Cofnij**.
+- Kształty zamazania: owal (CIRCLE), prostokąt, wielokąt (LINE), pikselizacja (PIXEL), czarny prostokąt/owal (BLACKBOX) albo klasyczny blur Gaussa.
+- Regulacja siły rozmycia, wtapiania krawędzi i tolerancji skoku trackera.
+- Eksport całego filmu albo tylko wybranych fragmentów (znaczniki **Eksport OD / DO**), z zachowaniem dźwięku przez FFmpeg.
+- Eksport zdjęcia z zamazanymi twarzami.
+- Zrzut bieżącej klatki — z zamazaniem albo bez (czysta klatka źródłowa).
+- Podgląd na żywo z zoomem do 12× i przesuwaniem widoku (Pan).
+- Motyw jasny / ciemny.
+- Zapamiętywanie ostatnich ustawień suwaków w pliku `settings.json`.
 
 ---
 
 ## Wymagania i instalacja
 
-### Wymagania
+### Jeśli masz gotowy `.exe`
 
-- Windows (program korzysta z ustawień DPI Windows i z `ffmpeg.exe`).
-- Python 3.x, jeśli uruchamiasz z kodu źródłowego.
-- Biblioteki: `opencv-python`, `numpy`, `Pillow`. `tkinter` jest częścią standardowej instalacji Pythona na Windows.
-- `ffmpeg.exe` w katalogu programu - potrzebny do zachowania dźwięku przy eksporcie wideo. Bez niego eksport wideo nadal powstanie, ale bez dźwięku.
+1. Włóż do jednego folderu: plik programu (`.exe`), plik `ffmpeg.exe` oraz pliki modeli `.onnx` (patrz niżej).
+2. Uruchom `.exe`.
+3. Jeśli brakuje `ffmpeg.exe`, program pokaże okno z linkami do pobrania. Bez FFmpeg eksport wideo nadal działa, ale **bez dźwięku**.
 
-### Uruchomienie z kodu
+### Jeśli uruchamiasz z kodu źródłowego
 
 ```bash
 pip install opencv-python numpy Pillow
 python face_blur_v37_multi_model.py
 ```
 
-### Uruchomienie jako program .exe
+Wymagane: Python 3.x, Windows (program wymusza obsługę wysokiego DPI w Windows, ale logika działa też na innych systemach, gdzie obsługa DPI jest po prostu pomijana).
 
-Jeśli masz wersję spakowaną, po prostu uruchom plik `.exe`. Pliki modeli `.onnx` i `ffmpeg.exe` muszą leżeć obok pliku `.exe` albo w tym samym katalogu co skrypt.
+### FFmpeg — po co i skąd
+
+FFmpeg jest potrzebny **tylko** do doklejenia oryginalnej ścieżki dźwiękowej do wyeksportowanego wideo.
+
+- Program najpierw szuka `ffmpeg.exe` obok siebie, potem w `PATH` systemowym.
+- Jeśli go nie ma przy starcie, pokazuje ostrzeżenie z linkami:
+  - https://github.com/BtbN/FFmpeg-Builds/releases
+  - https://www.gyan.dev/ffmpeg/builds/
+- Wypakuj z pobranej paczki sam plik `ffmpeg.exe` do folderu programu.
 
 ---
 
-## Pliki modeli AI i FFmpeg
+## Pliki modeli AI
 
-Program szuka modelu w tej kolejności: katalog wewnętrzny, katalog programu, katalog skryptu, bieżący katalog roboczy, `~/.face_detector`.
+Program szuka plików modelu w folderze programu, folderze roboczym i katalogu `~/.face_detector`. Możesz też wskazać plik ręcznie przyciskiem **Wskaż...**.
 
-### YuNet (domyślny)
+| Model w liście | Szukane pliki (pierwszy znaleziony wygrywa) | Charakter |
+| --- | --- | --- |
+| **YuNet** (domyślny) | `face_detection_yunet_2026may.onnx`, `face_detection_yunet_2023mar.onnx`, `yunet.onnx` | Szybki, dobry punkt startowy do większości nagrań. |
+| **SCRFD 500M** | `scrfd_500m_bnkps.onnx`, `scrfd_500m.onnx`, `500m.onnx`, `det_500m.onnx` | Lekki, często lepszy na małych / dalekich twarzach. |
+| **SCRFD 2.5G** | `scrfd_2.5g_bnkps.onnx`, `scrfd_2.5g.onnx`, `2.5g_bnkps.onnx`, `det_2.5g.onnx` | Dokładniejszy, wolniejszy. |
+| **YOLO-Face (Nano)** | `yolov8n-face.onnx`, `yolov8n_face.onnx`, `yolo-face.onnx`, `model.onnx` | Alternatywa, gdy inne modele coś pomijają albo coś fałszywie wykrywają. |
+| **Haar Cascade** (awaryjny) | `haarcascade_frontalface_default.xml` | Użyty automatycznie, gdy nie ma żadnego pliku `.onnx` albo model się nie wczyta. Najsłabszy — głównie twarze na wprost. |
 
-Szuka po kolei:
-
-- `face_detection_yunet_2026may.onnx`
-- `face_detection_yunet_2023mar.onnx`
-- `yunet.onnx`
-
-### SCRFD 500M
-
-- `scrfd_500m_bnkps.onnx`
-- `scrfd_500m.onnx`
-- `500m.onnx`
-- `det_500m.onnx`
-
-### SCRFD 2.5G
-
-- `scrfd_2.5g_bnkps.onnx`
-- `scrfd_2.5g.onnx`
-- `2.5g_bnkps.onnx`
-- `det_2.5g.onnx`
-
-### YOLO-Face (Nano)
-
-- `yolov8n-face.onnx`
-- `yolov8n_face.onnx`
-- `yolo-face.onnx`
-- `model.onnx`
-
-### Gdy nie ma pliku modelu
-
-Program pyta, czy chcesz wskazać plik ręcznie. Jeśli odmówisz albo plik się nie wczyta, przechodzi na Haar Cascade (`haarcascade_frontalface_default.xml`). Haar jest wyraźnie słabszy, szczególnie przy twarzach z profilu, z boku, w ruchu i przy słabym świetle. To częste źródło fałszywych detekcji.
-
-### FFmpeg
-
-Przy pierwszym uruchomieniu, jeśli nie ma `ffmpeg.exe`, program pokazuje okno z linkami do pobrania paczki FFmpeg. Wypakuj z niej tylko `ffmpeg.exe` do katalogu programu. Możesz też mieć FFmpeg w zmiennej PATH, program go wtedy znajdzie.
+> Zmiana modelu w trakcie pracy odświeża detekcję na bieżącej klatce. Już dodane zamazania (trackery) nie znikają — zmienia się tylko to, jakie zielone ramki-kandydaci zobaczysz.
 
 ---
 
 ## Szybki start
 
-### Wideo, jedna twarz ręcznie
+### Wideo — najczęstszy scenariusz
 
-1. Kliknij **Wybierz wideo** i wczytaj plik.
-2. Zatrzymaj się na klatce, gdzie twarz jest dobrze widoczna.
-3. Kliknij raz lewym przyciskiem myszy na twarz. Pojawi się zamazanie. Zielona ramka to tylko propozycja detektora. Zamazanie pojawia się dopiero po kliknięciu.
-4. Odtwórz film przyciskiem **PLAY** i sprawdź, czy zamazanie trzyma się twarzy.
-5. Jeśli trzeba, popraw ramkę, utnij śledzenie albo usuń błędny segment.
-6. Kliknij **Eksportuj / Zapisz**.
-
-### Wideo, wszystkie twarze automatycznie
-
-1. Kliknij **Wybierz wideo**.
-2. Kliknij **Zamaż cały film (AI)** i potwierdź.
-3. Poczekaj na koniec skanowania.
-4. Przejrzyj cały film klatka po klatce lub na podglądzie. Usuń błędne zamazania, utnij śledzenie tam, gdzie twarz się odwróciła.
-5. Dopiero wtedy kliknij **Eksportuj / Zapisz**.
+1. **Wybierz wideo**.
+2. Zatrzymaj się na klatce, gdzie widać twarz do zamazania.
+3. Kliknij w zieloną ramkę tej twarzy (AUTO) albo przeciągnij prostokąt myszą (MANUAL).
+4. Odtwórz film i obserwuj, czy zamazanie trzyma się twarzy.
+5. Gdy twarz znika / odwraca się na stałe / wychodzi z kadru — przerwij śledzenie (patrz: Problem 2).
+6. Powtórz dla kolejnych osób.
+7. Ustaw **Rozmycie** i **Wtapianie** tak, żeby nie było widać rysów, ale krawędź nie wyglądała jak wycięta nożyczkami.
+8. **Eksportuj / Zapisz**.
 
 ### Zdjęcie
 
-1. Kliknij **Wybierz zdjęcie**.
-2. Kliknij twarz albo narysuj ramkę przeciągnięciem.
-3. Kliknij **Eksportuj / Zapisz** i wybierz miejsce zapisu.
+1. **Wybierz zdjęcie**.
+2. Kliknij zieloną ramkę albo narysuj prostokąt / wielokąt.
+3. Popraw pozycję i rozmiar, przeciągając środek / krawędzie ramki.
+4. **Eksportuj / Zapisz** — zapisze zdjęcie z zamazaniem.
+
+### Szybka ścieżka automatyczna (do wstępnej kontroli, nie do ślepego eksportu)
+
+1. **Zamaż cały film (AI)** — program przeskanuje cały film i doda zamazania do wszystkich wykrytych trajektorii.
+2. **Obowiązkowo** przejrzyj listę po prawej i cały film klatka po klatce w podejrzanych miejscach.
+3. Usuń fałszywe zamazania (patrz: Problem 1), skróć segmenty odwróconych twarzy (patrz: Problem 2).
+4. Dopiero wtedy eksportuj.
 
 ---
 
-## Układ okna
+## Jak wygląda interfejs
 
-Od góry do dołu:
-
-1. **Górny pasek 1:** import, wybór modelu, automatyczne zamazywanie, motyw, zrzut, eksport.
-2. **Górny pasek 2:** pauza / wznowienie śledzenia, zoom, cofanie, czyszczenie.
-3. **Środek:** duży podgląd wideo albo zdjęcia, po prawej lista twarzy i segmentów.
-4. **Pod podglądem:** nazwa wczytanego pliku.
-5. **Pasek odtwarzania:** czas, PLAY, skoki w tył i w przód.
-6. **Oś czasu:** suwak klatek, skok na początek / koniec, numer klatki, znaczniki eksportu.
-7. **Pasek parametrów:** suwaki rozmycia, wtapiania, tolerancji skoku, prędkości oraz kształt zamazania.
-8. **Na samym dole:** pasek statusu z informacją o bieżącej klatce, zoomie, liczbie aktywnych twarzy i trybie.
-
-Po prawej stronie, nad listą, jest zawsze widoczny panel **DETEKTOR AI**. Pokazuje nazwę aktywnego modelu i nazwę pliku modelu, np. `YuNet (face_detection_yunet_2023mar.onnx)`. Jeśli model nie został znaleziony, zobaczysz tam `Haar Cascade` albo `brak pliku`.
-
----
-
-## Górny pasek 1 - import, model, detekcja, eksport
-
-### Wybierz wideo
-
-Wczytuje wideo. Obsługiwane: `.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`.
-
-Co robi po wczytaniu:
-
-- Czyści poprzednie trackery, znaczniki eksportu i cache klatek.
-- Ustawia liczbę klatek, FPS i rozmiar obrazu.
-- Odblokowuje przyciski odtwarzania, skoków, pauzy, eksportu i znaczników.
-- Ustawia prędkość odtwarzania na FPS filmu.
-- Pokazuje klatkę 0 i wykrywa twarze na niej.
-
-Wczytanie nowego pliku usuwa wszystkie wcześniejsze zamazania z poprzedniego pliku. Jeśli chcesz zachować pracę, najpierw wyeksportuj.
-
-### Wybierz zdjęcie
-
-Wczytuje zdjęcie: `.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`.
-
-W trybie zdjęcia program blokuje: odtwarzanie, suwak czasu, skoki, pauzę / wznowienie śledzenia, znaczniki eksportu i skanowanie całego filmu. Zdjęcie to zawsze jedna klatka, numer 0. Zamazanie działa tak samo jak na wideo, ale bez śledzenia w czasie.
-
-### GitHub: marek7400
-
-Link tekstowy. Kliknięcie otwiera w przeglądarce stronę repozytoriów autora: `https://github.com/marek7400?tab=repositories`. Nie zmienia nic w programie.
-
-### Model: - lista rozwijana
-
-Wybór modelu detekcji twarzy. Domyślnie: **YuNet**.
-
-- **YuNet** - domyślny, dobry kompromis między szybkością a dokładnością. Dobry do większości nagrań z przodu i lekkiego profilu.
-- **SCRFD 500M** - lżejszy, szybszy. Może gorzej łapać małe i odległe twarze.
-- **SCRFD 2.5G** - cięższy, dokładniejszy. Lepszy przy małych, częściowo zasłoniętych albo odległych twarzach. Wolniejszy.
-- **YOLO-Face (Nano)** - mały model YOLO. Dobry, gdy YuNet gubi twarze w ruchu.
-
-Zmiana modelu przeładowuje detektor i odświeża bieżącą klatkę z nową detekcją. Nie usuwa już dodanych trackerów. Jeśli program nie znajdzie pliku `.onnx` dla wybranego modelu, pyta o ręczne wskazanie pliku. Jeśli odmówisz, wraca do Haar Cascade.
-
-Praktyka: jeśli detektor znajduje twarze w losowych miejscach (np. na ścianie, ubraniu, dłoni), najpierw zmień model na inny i sprawdź tę samą klatkę. Często to nie jest wina śledzenia, tylko detekcji.
-
-### Wskaż...
-
-Otwiera okno wyboru pliku `.onnx` dla modelu wybranego na liście **Model:**. Używaj tego, gdy plik modelu ma inną nazwę albo leży w innym miejscu niż katalog programu. Po wskazaniu pliku program przeładowuje model i odświeża bieżącą klatkę.
-
-### Zamaż wszystkie zielone na bieżącej klatce
-
-Pomarańczowy przycisk. Zamienia wszystkie **zielone ramki** na bieżącej klatce w aktywne zamazania.
-
-Ważne:
-
-- Zielona ramka to tylko to, co detektor widzi w tej chwili. Nie jest jeszcze zamazaniem.
-- Ten przycisk dodaje tracker dla każdej zielonej ramki na tej klatce.
-- Jeśli detektor nie widzi żadnej twarzy, program pokazuje ostrzeżenie: „Detektor nie wykrył zielonych ramek twarzy na bieżącej klatce."
-- Jeśli na klatce jest fałszywa zielona ramka (np. na plakacie, telewizorze, odbiciu w lustrze), ten przycisk doda też dla niej zamazanie. Potem musisz ją usunąć ręcznie. Dlatego ten przycisk jest dobry, gdy na klatce są same prawdziwe twarze.
-
-### Zamaż cały film (AI)
-
-Różowy przycisk z piorunem. Skanuje cały film od pierwszej do ostatniej klatki, wykrywa twarze i tworzy dla nich segmenty zamazania.
-
-Jak działa:
-
-- Pyta o potwierdzenie: „Czy przeskanować cały film (X klatek) modelem AI i automatycznie zamazać wszystkie wykryte twarze?"
-- Pokazuje okno postępu z procentami i licznikiem klatek oraz przyciskiem **Anuluj**.
-- Dla każdej klatki wykrywa twarze i łączy je w trajektorie po odległości środków i nakładaniu się ramek (IoU).
-- Jeśli twarz znika na 6 klatek z rzędu, kończy jej segment.
-- Na końcu odrzuca segmenty krótsze niż 3 klatki.
-- Dodaje wszystkie pozostałe segmenty do listy po prawej.
-
-To jest tryb „najpierw automat, potem ręczna korekta". Nigdy nie eksportuj od razu po tym skanowaniu bez przejrzenia filmu. Skanowanie AI tworzy najwięcej błędów z dwóch typów: fałszywe twarze w losowych miejscach oraz śledzenie odwróconej głowy. Oba przypadki są opisane szczegółowo w dalszej części README.
-
-W trybie zdjęcia ten przycisk działa jak „Zamaż wszystkie zielone na bieżącej klatce".
-
-### Przycisk motywu: 🌙 / ☀️
-
-Przełącza jasny i ciemny motyw interfejsu. Nie zmienia wyglądu wideo ani zamazania. Zmienia tylko kolory okien, przycisków, suwaków i list. Przydaje się przy długiej pracy, żeby mniej męczyć oczy.
-
-### 📸 Zrób zrzut ekranu
-
-Zapisuje bieżącą klatkę do pliku `.jpg` albo `.png`. Otwiera okno wyboru miejsca zapisu. Domyślna nazwa: `zrzut_klatka_000123_blur.jpg` albo `..._czysta.jpg`, zależnie od checkboxa **z blur**.
-
-Zrzut bierze klatkę źródłową i nakłada na nią bieżące zamazania z bieżącymi ustawieniami suwaków. Nie bierze podglądu z zielonymi ramkami ani z pomocniczymi liniami. To jest czysty obraz.
-
-### Checkbox: z blur
-
-Znajduje się tuż obok przycisku **Zrób zrzut ekranu**. Domyślnie zaznaczony.
-
-- **Zaznaczony:** zrzut zapisuje klatkę z zamazaniami.
-- **Odznaczony:** zrzut zapisuje czystą klatkę źródłową, bez zamazań.
-
-Używaj odznaczonego wariantu, gdy chcesz zachować dowód, jak wyglądała oryginalna klatka, albo gdy chcesz porównać przed / po.
-
-### 💾 Eksportuj / Zapisz
-
-Niebieski przycisk po prawej stronie górnego paska. Główny przycisk zapisu.
-
-- Jeśli nie ma wczytanego pliku albo nie ma żadnego trackera, pokazuje ostrzeżenie: „Wybierz plik i zaznacz przynajmniej jedną twarz!"
-- W trybie zdjęcia: otwiera okno zapisu zdjęcia i zapisuje zdjęcie z zamazaniami.
-- W trybie wideo: otwiera okno zapisu `.mp4` i eksportuje wideo.
-
-Szczegóły eksportu są w rozdziale [Eksport](#eksport).
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WIERSZ 1: Wybierz wideo | Wybierz zdjęcie | GitHub | Model: [YuNet]       │
+│ [Wskaż...] [Zamaż wszystkie zielone...] [Zamaż cały film (AI)] [🌙/☀️]    │
+│ [📸 Zrób zrzut ekranu] [z blur] [💾 Eksportuj / Zapisz]                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ WIERSZ 2: [PAUSE] [RESUME] ● AKTYWNE [Stop gdy zgubi] [ZOOM 1:1]          │
+│ [Cofnij] [Wyczyść]                                                         │
+├──────────────────────────────────────────────────────────┬───────────────┤
+│                                                          │ DETEKTOR AI:  │
+│                                                          │ YuNet         │
+│                  PODGLĄD WIDEO                             │ Informacje    │
+│                  (klik / przeciągnięcie /                │ Segmenty i   │
+│                   scroll = zoom)                         │ Oś Czasu:   │
+│                                                          │ [lista twarzy]│
+│                                                          │ [IDŹ] [X]     │
+├──────────────────────────────────────────────────────────┴───────────────┤
+│ Nazwa wczytanego pliku                                                   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ 00:00:00.000 [▶ PLAY] W tył: [-30][-20][-10][-5][-2][-1]                  │
+│ W przód: [+1][+2][+5][+10][+20][+30]                                      │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [|<<] ─────── OŚ CZASU (suwak + pasek znaczników) ─────── [>>|] [klatka] │
+│ / total (znaczniki:) [Eksport OD] [Eksport DO] [Kasuj znaczniki]          │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Rozmycie | Wtapianie | Tolerancja skoku | Prędkość odtwarzania (kl./s)    │
+│ [CIRCLE] [BLACKBOX] [LINE] [PIXEL]                                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Pasek statusu: Klatka: ... | Zoom: ... | Aktywne twarze: ...              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Górny pasek 2 - śledzenie, zoom, edycja
+## Legenda kolorów ramek
 
-### ⏸ PAUSE
+To jest najważniejsza rzecz do zrozumienia, zanim zaczniesz klikać:
 
-Wstrzymuje śledzenie wszystkich aktywnych twarzy na bieżącej klatce.
+| Co widzisz | Co to znaczy | Czy będzie zamazane w eksporcie? |
+| --- | --- | --- |
+| **Zielona ramka** | Kandydat wykryty przez AI na bieżącej klatce. To tylko propozycja. | **Nie** — dopóki jej nie zatwierdzisz. |
+| **Turkusowa ramka / owal + uchwyty w narożnikach i środek z krzyżykiem** | Aktywny tracker — zamazanie, które już dodałeś i które program śledzi. Pojawia się po najechaniu myszą na zamazany obszar. | **Tak** — o ile klatka mieści się w przedziale `[start_frame – end_frame]` tego trackera. |
+| **Turkusowa linia wielokąta** | Aktywny tracker w trybie LINE (wielokąt). | Tak, tylko wewnątrz wielokąta. |
+| **Brak ramki, ale obszar jest zamazany** | Tracker działa, ale mysz nie jest nad nim, więc program nie rysuje obramowania. Zamazanie nadal działa. | Tak. |
+| **Napis na podglądzie: `PAUZA ŚLEDZENIA – BRAK ROZMYCIA`** | Śledzenie jest wstrzymane i na tej klatce nie ma żadnego aktywnego zamazania. | Nie. |
 
-Dokładnie: dla każdego trackera, który jest aktywny na bieżącej klatce, ustawia `end_frame = bieżąca klatka - 1`. Od bieżącej klatki w przód zamazanie znika. Wcześniejsze klatki zostają zamazane bez zmian.
-
-Wskaźnik obok przycisków zmienia się na **PAUZA ŚLEDZENIA** na czerwono. Na podglądzie może pojawić się napis „PAUZA SLEDZENIA - BRAK ROZMYCIA", gdy nie ma już aktywnych trackerów.
-
-PAUSE nie usuwa trackerów. To jest ucięcie, nie usunięcie. To jest podstawowe narzędzie do obsługi odwróconej twarzy.
-
-Uwaga: PAUSE tnie **wszystkie** aktywne twarze naraz. Jeśli masz kilka twarzy i tylko jedna się odwróciła, nie używaj PAUSE. Użyj metody precyzyjnej z rozdziału o odwróconej twarzy (podział przez przeciągnięcie + usunięcie ogona).
-
-Jeśli nie ma trackerów, PAUSE nic nie robi.
-
-### ▶ RESUME
-
-Wznawia śledzenie po pauzie.
-
-Dla każdej twarzy, której segment się skończył (ma ustawiony `end_frame`), tworzy nowy segment od bieżącej klatki. Nowy segment startuje z ostatniego znanego położenia twarzy (`last_good_bbox` albo `init_bbox`) i z tym samym kształtem co poprzedni (np. wielokąt LINE).
-
-W praktyce: stajesz na klatce, gdzie twarz znowu jest widoczna z przodu, klikasz RESUME i śledzenie rusza dalej. Wcześniejsza przerwa zostaje niezamazana.
-
-Jeśli żaden tracker nie jest zakończony, RESUME nic nie robi.
-
-PAUSE i RESUME razem tworzą przerwę w zamazywaniu. To jest normalny sposób pracy: pauza, gdy twarz znika albo się odwraca, wznowienie, gdy wraca.
-
-### Wskaźnik: ● ŚLEDZENIE AKTYWNE / ⏸ PAUZA ŚLEDZENIA
-
-Tylko informacja, nie przycisk.
-
-- **● ŚLEDZENIE AKTYWNE** (zielony): śledzenie działa normalnie.
-- **⏸ PAUZA ŚLEDZENIA** (czerwony): ostatnia operacja PAUSE ucięła aktywne segmenty. Nowe klatki nie będą zamazywane, dopóki nie klikniesz RESUME albo nie dodasz twarzy od nowa.
-
-### Checkbox: Stop gdy zgubi
-
-Domyślnie zaznaczony. Bardzo ważny dla jakości.
-
-- **Zaznaczony:** gdy tracker straci twarz (skok za duży, ramka poza ekranem, brak dopasowania), program po 2-3 klatkach oznacza tracker jako `failed` i kończy jego segment. Zamazanie nie „wędruje" dalej po ekranie.
-- **Odznaczony:** tracker trzyma się ostatniej znanej pozycji i dalej zamazuje to samo miejsce, nawet jeśli twarzy już tam nie ma. To jest częsta przyczyna „zamazanych obszarów w losowych miejscach", które wiszą w powietrzu.
-
-Zalecenie: trzymaj **Stop gdy zgubi** zaznaczone prawie zawsze. Odznaczaj tylko wtedy, gdy świadomie chcesz, żeby zamazanie zostało w miejscu, w którym twarz na chwilę zniknęła za przeszkodą i zaraz wróci, a nie chcesz, żeby tracker się wyłączył.
-
-Przy eksporcie ten checkbox też działa: jeśli tracker zgubi twarz, eksport przestaje go rysować po kilku klatkach, zamiast trzymać zamazanie w miejscu.
-
-### 🔍 ZOOM 1:1
-
-Resetuje zoom i wyśrodkowuje widok. Ustawia zoom na 1.0x i wraca do pełnej klatki. Używaj, gdy zgubiłeś się w powiększeniu albo chcesz zobaczyć całą klatkę.
-
-### Cofnij
-
-Usuwa ostatni dodany tracker z listy. Nie cofa innych operacji, np. zmiany rozmycia czy znaczników.
-
-Dokładnie: usuwa ostatni element z listy trackerów. Jeśli usunięty tracker był kolejnym segmentem tej samej twarzy, program przywraca poprzedniemu segmentowi tej twarzy brak końca (`end_frame = None`), czyli „odcina" cofnięcie podziału.
-
-Przykład: dodałeś twarz przez pomyłkę na bieżącej klatce. Klikasz **Cofnij** i znika tylko ten ostatni tracker. Wcześniejsze twarze zostają.
-
-Skrót klawiatury: **Delete** robi to samo.
-
-### Wyczyść
-
-Usuwa **wszystkie** trackery, wszystkie wielokąty LINE i resetuje liczniki. Czyści całe zamazywanie z bieżącego pliku. Nie usuwa znaczników eksportu ani nie zamyka pliku. Nie pyta o potwierdzenie.
-
-Używaj ostrożnie. Jeśli chcesz usunąć tylko jedną błędną twarz, użyj przycisku **X** przy niej na liście albo prawego przycisku myszy na niej. **Wyczyść** jest do sytuacji „zaczynam od zera".
+> **Wniosek:** zielone ramki to nie zamazanie. Zamazanie to dopiero to, co widzisz jako rozmyty / czarny / pikselowany obszar oraz to, co jest na liście po prawej.
 
 ---
 
-## Podgląd wideo - myszka i rysowanie
+## Opis wszystkich przycisków i pól — pasek górny, wiersz 1
 
-Podgląd to główne miejsce pracy. Kolory mają znaczenie:
+### `Wybierz wideo`
 
-- **Zielona ramka** - to, co detektor AI widzi teraz. To nie jest jeszcze zamazanie. To tylko propozycja. Kliknięcie w nią zamienia ją w zamazanie.
-- **Niebiesko-zielona ramka / elipsa** - tracker, nad którym trzymasz kursor albo który przeciągasz. Pokazuje środek (kółko z krzyżykiem) i narożniki (małe kwadraty). To jest ramka, którą możesz przesunąć albo zmienić jej rozmiar.
-- **Pomarańczowo-niebieskie punkty i linie** - rysowany wielokąt w trybie LINE.
+- **Co robi:** otwiera okno wyboru pliku wideo (`.mp4`, `.mov`, `.avi`, `.mkv`, `.wmv`).
+- **Po wczytaniu:** resetuje wszystkie trackery, znaczniki eksportu, zoom i liczniki; ustawia prędkość odtwarzania na podstawie FPS filmu; odblokowuje przyciski odtwarzania, osi czasu i eksportu.
+- **Uwaga:** wczytanie nowego pliku kasuje dotychczasową pracę nad poprzednim filmem. Najpierw wyeksportuj poprzedni.
 
-### Klik lewym przyciskiem - AUTO
+### `Wybierz zdjęcie`
 
-Jedno kliknięcie lewym przyciskiem na twarzy dodaje tracker w trybie AUTO.
+- **Co robi:** otwiera okno wyboru zdjęcia (`.jpg`, `.jpeg`, `.png`, `.bmp`, `.webp`).
+- **Po wczytaniu:** przełącza program w tryb zdjęcia: oś czasu, odtwarzanie, przyciski skakania, prędkość i znaczniki eksportu są wyłączone, bo jest tylko 1 klatka.
+- **Eksport zdjęcia:** przyciskiem **Eksportuj / Zapisz**.
 
-Program szuka w bieżącej detekcji ramki, która zawiera kliknięty punkt (z marginesem 15 pikseli). Jeśli znajdzie, tworzy tracker dokładnie na tej wykrytej ramce. Jeśli nie znajdzie, pokazuje w panelu informacyjnym „Klik (x,y) poza ramką."
+### `GitHub: marek7400`
 
-Używaj AUTO, gdy detektor dobrze widzi twarz. To jest najszybsze i najdokładniejsze.
+- **Co robi:** kliknięcie otwiera w przeglądarce profil GitHub autora: https://github.com/marek7400
+- Nie zmienia niczego w programie.
 
-### Przeciągnięcie lewym przyciskiem - MANUAL
+### `Model:` — lista rozwijana
 
-Przytrzymaj lewy przycisk i przeciągnij, żeby narysować prostokąt. Po puszczeniu program tworzy tracker w trybie MANUAL na narysowanym obszarze.
+- **Co robi:** wybór detektora AI: `YuNet`, `SCRFD 500M`, `SCRFD 2.5G`, `YOLO-Face (Nano)`.
+- **Kiedy zmieniać:** gdy aktualny model gubi twarz, wykrywa coś, co twarzą nie jest, albo źle radzi sobie z małymi / obróconymi / częściowo zasłoniętymi twarzami.
+- **Efekt:** program przeładowuje model i ponownie wykrywa twarze na bieżącej klatce. Istniejące zamazania zostają.
+- Panel po prawej (`DETEKTOR AI:`) zawsze pokazuje, który model i który plik `.onnx` jest faktycznie aktywny.
 
-Używaj MANUAL, gdy:
+### `Wskaż...`
 
-- Detektor nie widzi twarzy (profil, tył głowy, maska, słabe światło, mała twarz).
-- Chcesz zamazać coś, co nie jest twarzą (np. tablica rejestracyjna, dokument, tatuaż, ekran telefonu).
-- Zielona ramka jest za mała, za duża albo przesunięta.
+- **Co robi:** pozwala ręcznie wskazać plik `.onnx` dla modelu wybranego na liście `Model:`.
+- **Kiedy używać:** gdy plik modelu ma inną nazwę niż te, których program szuka automatycznie, albo leży w innym folderze.
+- Jeśli pliku nie ma, program zapyta, czy chcesz go wskazać ręcznie. Odmowa = fallback do Haar Cascade.
 
-Ramka MANUAL musi mieć co najmniej 8x8 pikseli. Mniejsza nie zostanie dodana.
+### `Zamaż wszystkie zielone na bieżącej klatce`
 
-### Środek ramki - przesuwanie
+- **Co robi:** zamienia **wszystkie** zielone ramki widoczne na bieżącej klatce w aktywne trackery (zamazania).
+- **Kiedy używać:** gdy na klatce jest kilka osób i chcesz zamazać je wszystkie naraz, zamiast klikać każdą osobno.
+- **Uwaga:** jeśli detektor pomylił się i zaznaczył na zielono coś, co twarzą nie jest (np. plakat, wzór na koszulce, dłoń), ten przycisk zamazuje też ten błąd. Po kliknięciu sprawdź listę po prawej i usuń fałszywe wpisy (patrz: Problem 1).
+- Jeśli na klatce nie ma zielonych ramek, program pokaże ostrzeżenie.
 
-Najedź kursorem na środek istniejącej ramki. Kursor zmieni się w strzałki (fleur). Przytrzymaj lewy przycisk i przeciągnij, żeby przesunąć ramkę.
+### `⚡ Zamaż cały film (AI)`
 
-Przesunięcie w środku filmu ma ważną konsekwencję: program **dzieli tracker**. Stary segment kończy się na klatce przed bieżącą (`end_frame = bieżąca - 1`), a od bieżącej klatki zaczyna się nowy segment z poprawioną ramką. Dzięki temu poprawka nie psuje wcześniejszych klatek, które były dobre.
+- **Co robi:** skanuje **cały film klatka po klatce**, wykrywa twarze modelem AI i automatycznie tworzy zamazania dla każdej wykrytej trajektorii twarzy.
+- **Przebieg:** program pyta o potwierdzenie → pokazuje okno postępu z procentami i licznikiem klatek → możesz przerwać przyciskiem **Anuluj**.
+- **Zasady tworzenia trajektorii w skanowaniu:**
+  - Nowa twarz na klatce, która pasuje do już śledzonej (blisko + nakładanie się), dopisuje się do tej samej trajektorii.
+  - Twarz, której nie widać przez **6 kolejnych klatek**, kończy trajektorię.
+  - Do listy trafiają tylko trajektorie o długości **co najmniej 3 klatek**. Jednoklatkowe „mignięcia” są odrzucane.
+- **Czego NIE robi:** nie ocenia, czy twarz jest odwrócona tyłem, czy to na pewno twarz, ani czy ta osoba w ogóle powinna być zamazana. To Twoja decyzja po skanowaniu.
+- **Po skanowaniu obowiązkowo:** przejrzyj listę po prawej i film — usuń fałszywe zamazania i skróć segmenty, gdzie twarz jest już odwrócona (patrz: Problem 1 i Problem 2).
+- W trybie zdjęcia przycisk działa jak „zamaż wszystkie zielone na bieżącej klatce”.
 
-Jeśli przesuwasz ramkę na tej samej klatce, na której tracker się zaczął, program po prostu aktualizuje ten tracker, bez dzielenia.
+### `🌙 / ☀️` — motyw
 
-### Krawędź albo narożnik ramki - zmiana rozmiaru
+- **Co robi:** przełącza motyw jasny / ciemny całego interfejsu.
+- Nie wpływa na zamazanie, eksport ani wideo. Tylko wygląd.
 
-Najedź na krawędź albo narożnik ramki. Kursor zmieni się w podwójną strzałkę. Przytrzymaj lewy przycisk i przeciągnij.
+### `📸 Zrób zrzut ekranu`
 
-- Krawędź lewa / prawa: zmiana szerokości.
-- Krawędź góra / dół: zmiana wysokości.
-- Narożnik: zmiana szerokości i wysokości naraz.
+- **Co robi:** zapisuje bieżącą klatkę do pliku `.jpg` / `.png` (wybierasz lokalizację w oknie zapisu).
+- Nazwa domyślna: `zrzut_klatka_000123_blur.jpg` albo `..._czysta.jpg`, zależnie od checkboxa **z blur**.
+- Szczegóły: patrz sekcja [Zrzut ekranu](#zrzut-ekranu).
 
-Tak samo jak przy przesuwaniu, zmiana rozmiaru w środku filmu dzieli tracker na dwa segmenty: stary kończy się przed bieżącą klatką, nowy zaczyna się od bieżącej.
+### `z blur` — checkbox obok zrzutu ekranu
 
-### Scroll myszki - Zoom
+- **Zaznaczony (domyślnie):** zrzut zawiera zamazania z bieżącej klatki (tak jak na podglądzie).
+- **Odznaczony:** zrzut to czysta klatka źródłowa, bez zamazań — mimo że na podglądzie zamazania widać.
+- Przydatne, gdy chcesz porównać „przed / po” albo zachować dowód, jak wyglądała klatka przed edycją.
 
-Kręć kółkiem myszki, żeby powiększyć albo pomniejszyć widok. Zoom działa od 1.0x do 12.0x, krok 1.25x. Zoom wyśrodkowuje się na miejscu kursora.
+### `💾 Eksportuj / Zapisz`
 
-Zoom nie zmienia wideo ani zamazania. Zmienia tylko to, co widzisz. Przydaje się do precyzyjnego ustawienia ramki na małej twarzy albo do sprawdzenia, czy zamazanie dokładnie kryje oczy i usta.
-
-### Prawy przycisk myszki - dwie funkcje
-
-Zachowanie zależy od zoomu:
-
-- **Zoom = 1.0x, klik prawym na ramkę:** usuwa tracker, który jest pod kursorem. To jest najszybszy sposób usunięcia jednej błędnej twarzy bez szukania jej na liście. Program usuwa cały segment tego trackera.
-- **Zoom > 1.0x, przeciągnięcie prawym:** przesuwanie widoku (Pan). Przytrzymaj prawy przycisk i przeciągnij, żeby przesunąć powiększony obraz.
-- **Zoom > 1.0x, klik prawym bez przeciągnięcia:** usuwa tracker pod kursorem, tak samo jak przy zoomie 1.0x.
-- **Tryb LINE i są narysowane punkty:** prawy przycisk kasuje rysowany wielokąt i zaczyna od nowa.
-
-Uwaga: prawy przycisk usuwa cały segment, nie tylko od bieżącej klatki. Jeśli chcesz uciąć śledzenie od bieżącej klatki, a nie usunąć cały segment, użyj PAUSE albo metody podziału z rozdziału o odwróconej twarzy.
-
-### Shift + lewy przycisk - przesuwanie widoku (Pan)
-
-Przytrzymaj **Shift**, przytrzymaj lewy przycisk i przeciągnij. Przesuwa powiększony widok bez rysowania ramki i bez przesuwania trackerów. Przydaje się, gdy zoom jest duży i chcesz obejrzeć inny fragment klatki.
-
-### Podwójne kliknięcie lewym - zamykanie wielokąta LINE
-
-W trybie LINE podwójne kliknięcie zamyka wielokąt i tworzy tracker. Szczegóły w rozdziale o LINE.
-
----
-
-## Panel prawy - lista twarzy i segmentów
-
-Po prawej stronie, pod panelem DETEKTOR AI, jest sekcja **Segmenty i Oś Czasu**.
-
-Każdy wiersz to jeden segment śledzenia. Przykład napisu:
-
-`Twarz 2 [ID5] (A) [120-...]`
-
-Co oznacza:
-
-- **Twarz 2** - numer twarzy (`face_id`). Ta sama osoba, która znika i wraca, może mieć kilka segmentów, ale ten sam numer twarzy, jeśli program połączył je jako tę samą twarz.
-- **[ID5]** - unikalny numer segmentu (`id`). Dwa segmenty tej samej twarzy mają różne ID.
-- **(A)** - typ dodania: `A` = AUTO, `M` = MANUAL, `L` = LINE (wielokąt).
-- **[120-...]** - zakres klatek. `...` oznacza, że segment nie ma końca i trwa dalej. Liczba po myślniku to klatka końcowa, np. `[120-350]`.
-
-Kolor wiersza:
-
-- **Zielonkawy** - segment aktywny na bieżącej klatce.
-- **Szary** - segment nieaktywny na bieżącej klatce (skończył się wcześniej albo zaczyna się później).
-
-### Przycisk IDŹ
-
-Zielony przycisk przy każdym segmencie. Przenosi podgląd na klatkę startową tego segmentu. Używaj, gdy chcesz szybko znaleźć, gdzie dany błędny segment się zaczął.
-
-### Przycisk X
-
-Czerwony przycisk przy każdym segmencie. Usuwa tylko ten segment. Nie usuwa innych segmentów tej samej twarzy.
-
-Uwaga: jeśli usuniesz ostatni segment twarzy, a wcześniejszy segment miał ustawiony koniec, program przywraca mu brak końca (`end_frame = None`). Czyli usunięcie ogona „odblokowuje" wcześniejszy segment.
-
-To jest kluczowe narzędzie do czyszczenia błędów: znajdujesz błędny segment na liście, klikasz **X**, a reszta zostaje.
+- **Co robi:** główny przycisk zapisu.
+  - W trybie wideo: otwiera okno wyboru nazwy pliku `.mp4` i eksportuje wideo.
+  - W trybie zdjęcia: zapisuje zdjęcie z zamazaniem.
+- **Blokada:** jeśli nie ma wczytanego pliku albo nie ma żadnego trackera (żadnego zamazania), program pokaże ostrzeżenie i nic nie wyeksportuje.
+- **Ważne:** eksportuje **tylko** to, co jest na liście trackerów i w ich przedziałach klatek. Zielone ramki same w sobie nie są eksportowane.
+- Szczegóły eksportu: patrz sekcja [Eksport wideo i zdjęć](#eksport-wideo-i-zdjęć).
 
 ---
 
-## Sterowanie odtwarzaniem
+## Opis wszystkich przycisków — pasek górny, wiersz 2
 
-### Licznik czasu
+### `⏸ PAUSE` — wstrzymaj śledzenie
 
-Pokazuje dokładny czas bieżącej klatki w formacie `GG:MM:SS.mmm`, np. `00:01:23.456`. To jest czas liczony z numeru klatki i FPS filmu.
+- **Co robi:** kończy wszystkie aktywne trackery na klatce **poprzedzającej bieżącą**: ustawia im `end_frame = bieżąca_klatka − 1` i zatrzymuje ich śledzenie.
+- **Kiedy używać:** to jest Twój główny przycisk do **kończenia zamazania w wybranym momencie** — np. gdy twarz się odwraca, wychodzi z kadru, znika za kimś albo po prostu od tej klatki nie chcesz jej już zamazywać.
+- **Efekt wizualny:** wskaźnik zmienia się na `⏸ PAUZA ŚLEDZENIA`, a jeśli na tej klatce nie ma już żadnego aktywnego zamazania, na podglądzie pojawia się napis `PAUZA ŚLEDZENIA – BRAK ROZMYCIA`.
+- **Nieaktywny, gdy:** tryb zdjęcia albo brak trackerów.
+- **Uwaga:** PAUSE nie usuwa zamazań z wcześniejszych klatek. One zostają w eksporcie. PAUSE tnie tylko „odtąd dalej”.
 
-### ▶ PLAY / ⏹ STOP
+### `▶ RESUME` — wznów śledzenie
 
-- **PLAY:** odtwarza wideo od bieżącej klatki z prędkością z suwaka prędkości. Podczas odtwarzania program nie robi detekcji AI na każdej klatce, tylko rysuje już dodane zamazania. Dzięki temu odtwarzanie jest płynne.
-- **STOP:** zatrzymuje odtwarzanie i odświeża bieżącą klatkę z pełną detekcją.
+- **Co robi:** wznawia śledzenie dla twarzy, których trackery zostały zakończone (np. przyciskiem PAUSE). Dla każdej takiej twarzy tworzy nowy segment śledzenia od bieżącej klatki, zaczynając od ostatniego znanego położenia.
+- **Kiedy używać:** gdy wstrzymałeś śledzenie na chwilę (np. twarz odwróciła się na kilka klatek i wróciła przodem) i chcesz, żeby ta sama twarz była znowu śledzona.
+- **Pułapka — przeczytaj uważnie:**
+  - Jeśli wstrzymałeś śledzenie, bo twarz **na stałe** się odwróciła i nie chcesz jej już zamazywać, **NIE klikaj RESUME**. RESUME przywróci zamazywanie tej twarzy.
+  - RESUME wznawia **wszystkie** zakończone trackery, nie tylko jedną wybraną twarz.
+- **Nieaktywny, gdy:** tryb zdjęcia albo brak trackerów.
 
-Jeśli jesteś na ostatniej klatce i klikniesz PLAY, program wraca na klatkę 0.
+### Wskaźnik `● AKTYWNE` / `⏸ PAUZA ŚLEDZENIA`
 
-W trybie zdjęcia PLAY jest zablokowany.
+- Tylko informacja: zielony = śledzenie aktywne, czerwony = śledzenie wstrzymane przyciskiem PAUSE.
+- Sam w sobie nie jest klikalny.
 
-### Skoki w tył: -30, -20, -10, -5, -2, -1
+### `Stop gdy zgubi` — checkbox (domyślnie zaznaczony)
 
-Przenoszą o podaną liczbę klatek w tył. Używaj do precyzyjnego cofania się do momentu, gdzie twarz się odwróciła albo gdzie pojawiło się błędne zamazanie.
+- **Zaznaczony (zalecany):** gdy tracker straci twarz (np. gwałtowny skok, wyjście z kadru, zasłonięcie), program po 2–3 nieudanych klatkach oznacza tracker jako `failed`, kończy jego segment i **przestaje go zamazywać** w kolejnych klatkach.
+- **Odznaczony:** tracker „trzyma się” ostatniego znanego położenia — zamazanie zostaje w miejscu, gdzie twarz była ostatnio widziana, nawet jeśli twarzy już tam nie ma.
+- **Kiedy odznaczyć:** tylko świadomie, na krótki fragment, gdy twarz na chwilę znika za przeszkodą i zaraz wraca w to samo miejsce, a nie chcesz, żeby tracker się poddał. W większości przypadków zostaw zaznaczone — to główna ochrona przed zamazaniami „wiszącymi w powietrzu” (patrz: Problem 1).
+- Wpływa zarówno na podgląd, jak i na eksport.
 
-### Skoki w przód: +1, +2, +5, +10, +20, +30
+### `🔍 ZOOM 1:1`
 
-Przenoszą o podaną liczbę klatek w przód. `+1` i `-1` to klatka po klatce, najlepszy tryb do dokładnego cięcia.
+- **Co robi:** resetuje zoom do 100% i centruje widok na środku klatki.
+- Nie zmienia zamazań ani klatki. Tylko widok.
+
+### `Cofnij`
+
+- **Co robi:** usuwa **ostatnio dodany** tracker (ostatni wpis na liście).
+- Jeśli usunięty tracker był kontynuacją tej samej twarzy (ten sam `face_id`), poprzedni segment tej twarzy zostaje „odblokowany” (jego `end_frame` wraca na `None`), czyli twarz znowu jest śledzona bez przerwy.
+- Skrót klawiatury: `Delete`.
+- Różnica względem **Wyczyść**: Cofnij usuwa tylko jeden, ostatni wpis.
+
+### `Wyczyść`
+
+- **Co robi:** usuwa **wszystkie** trackery i wszystkie narysowane punkty wielokąta. Resetuje liczniki twarzy.
+- **Nieodwracalne** (nie ma „przywróć”). Używaj, gdy chcesz zacząć zamazywanie od zera albo gdy po skanowaniu AI lista jest tak zaśmiecona, że szybciej jest dodać wszystko ręcznie od nowa.
+- Nie usuwa wczytanego pliku ani znaczników eksportu.
 
 ---
 
-## Oś czasu i znaczniki eksportu
+## Panel boczny po prawej — lista twarzy
 
-### Przycisk |<<
+### `DETEKTOR AI:` — informacja o modelu
 
-Skok na pierwszą klatkę (klatka 0). Zatrzymuje odtwarzanie.
+Pokazuje aktywny model i nazwę pliku modelu, np.:
+
+```
+DETEKTOR AI:
+YuNet
+(face_detection_yunet_2023mar.onnx)
+```
+
+Jeśli widzisz `brak pliku` albo `Haar Cascade`, znaczy to, że plik `.onnx` nie został znaleziony i program używa awaryjnego detektora.
+
+### Pole informacyjne
+
+Pokazuje podstawowe dane o wczytanym pliku: nazwę, rozmiar klatki, liczbę klatek, FPS (wideo) albo rozmiar w pikselach (zdjęcie).
+
+### `Segmenty i Oś Czasu:` — lista trackerów
+
+Każdy wiersz to **jeden segment zamazania jednej twarzy**:
+
+```
+Twarz 2 [ID5] (A) [120-340]
+```
+
+- `Twarz 2` — numer twarzy (`face_id`). Ta sama osoba w różnych momentach filmu może mieć różne segmenty, ale ten sam `face_id`, jeśli program uznał, że to kontynuacja.
+- `[ID5]` — unikalny numer segmentu (`id`). Dwa segmenty tej samej twarzy mają różne `ID`, ale ten sam numer `Twarz`.
+- `(A)` / `(M)` / `(L)` — sposób dodania:
+  - `A` = AUTO (klik na zieloną ramkę / przycisk „Zamaż wszystkie zielone...” / skanowanie AI),
+  - `M` = MANUAL (ręczne przeciągnięcie prostokąta),
+  - `L` = LINE (ręczne narysowanie wielokąta).
+- `[120-340]` — przedział klatek, w którym ten segment zamazuje. `...` zamiast liczby końcowej oznacza, że segment jest otwarty (śledzenie trwa, nie ma ustawionego końca).
+
+Kolor wiersza: zielonkawy = segment aktywny na bieżącej klatce, szary = segment nieaktywny na bieżącej klatce (np. zaczyna się później albo już się skończył).
+
+### Przyciski w wierszu listy
+
+| Przycisk | Co robi |
+| --- | --- |
+| `IDŹ` | Skacze do klatki początkowej (`start_frame`) tego segmentu. Najszybszy sposób, żeby sprawdzić, od kiedy dany tracker zamazuje i czy to na pewno ta twarz. |
+| `X` | Usuwa **tylko ten segment**. Inne segmenty tej samej twarzy zostają. Jeśli to był ostatni segment twarzy i miał ustawiony koniec, poprzedni segment zostaje odblokowany. |
+
+> **Jak używać listy do kontroli:** po skanowaniu AI albo po ręcznej pracy klikaj po kolei `IDŹ` przy każdym wpisie i patrz, czy zamazanie faktycznie leży na twarzy. To jest znacznie szybsze niż przewijanie całego filmu na ślepo.
+
+---
+
+## Sterowanie odtwarzaniem i skakaniem po klatkach
+
+### Licznik czasu `00:00:00.000`
+
+Dokładny czas bieżącej klatki w formacie `godziny:minuty:sekundy.milisekundy`. Obliczany jako `numer_klatki / FPS`.
+
+### `▶ PLAY` / `⏹ STOP`
+
+- **PLAY:** odtwarza film od bieżącej klatki z prędkością ustawioną suwakiem **Prędkość odtwarzania**.
+- **STOP:** zatrzymuje odtwarzanie i odświeża klatkę z detekcją.
+- Podczas odtwarzania program **nie** uruchamia detekcji AI na każdej klatce — pokazuje tylko już zdefiniowane zamazania. Dzięki temu odtwarzanie jest płynne. Detekcja wraca po zatrzymaniu.
+- Jeśli jesteś na ostatniej klatce i naciśniesz PLAY, odtwarzanie zaczyna się od początku.
+- W trybie zdjęcia przycisk jest nieaktywny.
+
+### `W tył:` — przyciski `-30`, `-20`, `-10`, `-5`, `-2`, `-1`
+
+Skok wstecz o podaną liczbę klatek. Np. `-30` przy 25 FPS to ok. 1,2 s wstecz.
+
+### `W przód:` — przyciski `+1`, `+2`, `+5`, `+10`, `+20`, `+30`
+
+Skok w przód o podaną liczbę klatek. `+1` / `-1` to przeglądanie klatka po klatce — najlepszy sposób na dokładne znalezienie momentu odwrócenia twarzy albo pojawienia się fałszywego zamazania.
+
+### `|<<` i `>>|`
+
+Skok na pierwszą / ostatnią klatkę filmu.
+
+---
+
+## Oś czasu i znaczniki fragmentów do eksportu
+
+### Pasek znaczników (cienki pasek nad suwakiem)
+
+- Zielone prostokąty = zaznaczone fragmenty do eksportu.
+- Żółta linia = tymczasowy znacznik **OD** (czeka na kliknięcie **DO**).
+- Czerwona linia = bieżąca klatka.
+- Kliknięcie w pasek znaczników przenosi Cię do klikniętej klatki (i zatrzymuje odtwarzanie).
 
 ### Suwak osi czasu
 
-Duży suwak pod podglądem. Przeciąganie przenosi po filmie. Po puszczeniu program odświeża klatkę z pełną detekcją.
+- Przeciąganie suwaka = przewijanie filmu. Po puszczeniu suwaka program odświeża klatkę z detekcją.
+- Suwak jest zsynchronizowany z bieżącą klatką i polem numeru klatki.
+- W trybie zdjęcia suwak jest wyłączony.
 
-Nad suwakiem jest cienki pasek znaczników:
+### Pole numeru klatki + `/ total`
 
-- **Czerwona kreska** - bieżąca klatka.
-- **Zielony prostokąt** - wybrany fragment do eksportu (znacznik OD / DO).
-- **Żółta kreska** - tymczasowy znacznik OD, gdy kliknąłeś OD, ale jeszcze nie kliknąłeś DO.
+- Wpisz numer klatki i naciśnij `Enter`, żeby do niej skoczyć.
+- `/ total` pokazuje numer ostatniej klatki (np. `/ 1250`). W trybie zdjęcia: `/ 0 (Zdjęcie)`.
 
-Kliknięcie w pasek znaczników też przenosi do tej klatki.
+### `(znaczniki:)` — `Eksport OD` / `Eksport DO` / `Kasuj znaczniki`
 
-### Przycisk >>|
+To **nie** są znaczniki zamazań. To znaczniki **fragmentów filmu do wyeksportowania**.
 
-Skok na ostatnią klatkę. Zatrzymuje odtwarzanie.
+- `Eksport OD`: zapamiętuje bieżącą klatkę jako początek fragmentu. Przycisk zmienia kolor na pomarańczowy — to znak, że czeka na koniec.
+- `Eksport DO`: zamyka fragment: `początek = mniejsza z klatek OD/DO`, `koniec = większa`. Fragment dopisuje się do listy. Możesz zaznaczyć wiele fragmentów — nakładające się albo stykające się fragmenty program automatycznie scala w jeden.
+- `Kasuj znaczniki`: usuwa fragment, w którym aktualnie się znajdujesz. Przycisk jest aktywny (czerwony) tylko wtedy, gdy bieżąca klatka leży wewnątrz jakiegoś zaznaczonego fragmentu.
+- **Jeśli nie zaznaczysz żadnego fragmentu**, eksport obejmie cały film.
+- **Jeśli zaznaczysz fragmenty**, eksport obejmie **tylko** te fragmenty, połączone w kolejności, jeden po drugim (wideo i dźwięk są cięte i łączone w tej samej kolejności).
 
-### Pole numeru klatki i / total
-
-Pole tekstowe z numerem bieżącej klatki. Wpisz numer i naciśnij **Enter**, żeby skoczyć do tej klatki. Obok jest napis `/ 1234`, czyli numer ostatniej klatki. W trybie zdjęcia pokazuje `/ 0 (Zdjęcie)`.
-
-### Eksport OD
-
-Ustawia początek fragmentu do eksportu na bieżącej klatce. Przycisk zmienia kolor na pomarańczowy, a na pasku znaczników pojawia się żółta kreska. Status na dole pokazuje: „Ustawiono znacznik OD na klatce X. Przejdź do klatki końcowej i kliknij 'Eksport DO'."
-
-Sam przycisk OD jeszcze nic nie zapisuje. To tylko znacznik.
-
-### Eksport DO
-
-Zamyka fragment. Bierze wcześniejszy znacznik OD i bieżącą klatkę jako koniec. Dodaje fragment `[OD - DO]` do listy. Jeśli klikniesz DO bez wcześniejszego OD, program przyjmuje OD = 0.
-
-Możesz dodać wiele fragmentów. Program sortuje je i scala nakładające się fragmenty w jeden. Przy eksporcie wyeksportuje tylko te fragmenty, połączone w jeden plik.
-
-Przycisk OD wraca do koloru zielono-niebieskiego po dodaniu fragmentu.
-
-### Kasuj znaczniki
-
-Usuwa fragment eksportu, w którym znajduje się bieżąca klatka. Przycisk jest aktywny tylko wtedy, gdy bieżąca klatka jest wewnątrz jakiegoś zaznaczonego fragmentu. Jeśli nie jesteś w żadnym fragmencie, przycisk jest wyszarzony i nic nie robi.
-
-Żeby usunąć fragment, stań na dowolnej klatce wewnątrz tego fragmentu i kliknij **Kasuj znaczniki**.
+> Uwaga: znaczniki eksportu nie zastępują usuwania fałszywych trackerów. Jeśli w zaznaczonym fragmencie jest fałszywe zamazanie, to ono też się wyeksportuje. Najpierw wyczyść trackery, potem tnij fragmenty.
 
 ---
 
-## Dolny pasek - suwaki i kształt zamazania
+## Suwaki i przełączniki parametrów zamazania
 
-### Suwak: Rozmycie
+Wszystkie zmiany widać od razu na podglądzie (po odświeżeniu klatki). Przy eksporcie program używa wartości suwaków z momentu kliknięcia **Eksportuj / Zapisz**.
 
-Zakres: 0 do 100. Domyślnie: 50. Zapisywany w `settings.json`.
+### `Rozmycie` — suwak 0–100 (domyślnie 50)
 
-Co robi:
+- Siła rozmycia / pikselizacji.
+- **Tryb Gauss:** im wyżej, tym większe jądro rozmycia Gaussa (od ok. 3 px do ok. 151 px). Przy 0 zamazanie jest prawie niewidoczne — nie używaj niskich wartości do anonimizacji.
+- **Tryb PIXEL:** im wyżej, tym większe bloki pikseli (od ok. 2 px do ok. 40 px).
+- **Jak ustawić:** podnieś tak wysoko, żeby nie dało się odczytać rysów twarzy, oczu, ust ani charakterystycznych pieprzyków / tatuaży. Sprawdź na zbliżeniu (zoom) i na zatrzymanej klatce, nie tylko w ruchu.
 
-- W trybie Gaussa: im większa wartość, tym większe jądro rozmycia. W kodzie: `k = 3 + (wartość / 100) * 148`, zaokrąglone do nieparzystej. Przy 0 rozmycie jest minimalne, przy 100 bardzo mocne.
-- W trybie PIXEL: im większa wartość, tym większe bloki pikseli. `block_size = 2 + (wartość / 100) * 38`.
-- W trybie BLACKBOX: suwak nie ma znaczenia, bo zamazanie to czarny kolor.
+### `Wtapianie` — suwak 0–100 (domyślnie 15)
 
-Zmiana suwaka od razu odświeża bieżącą klatkę. Przy eksporcie program bierze wartość z momentu eksportu.
+- Miękkość krawędzi zamazania (feathering).
+- `0` = ostra, widoczna krawędź „wycięcia”.
+- `15–30` = zwykle naturalne przejście, które nie rzuca się w oczy.
+- `100` = bardzo rozmyta, szeroka krawędź — zamazanie „rozlewa się” poza twarz.
+- **Nie działa** w trybie BLACKBOX (czarne wypełnienie jest wstawiane bez wtapiania).
 
-Praktyka: twarz jest naprawdę zamazana dopiero wtedy, gdy nie da się rozpoznać oczu, nosa, ust i kształtu. Jeśli przy 50 widać rysy, podnieś do 70-90. Jeśli zamazanie „wylewa" się poza twarz i wygląda nienaturalnie, zmniejsz wtapianie, a nie rozmycie.
+### `Tolerancja skoku` — suwak 0–300 (domyślnie 130)
 
-### Suwak: Wtapianie
+- Najważniejszy suwak do walki z „uciekającym” trackerem.
+- Określa, o ile pikseli środek zamazanego obszaru może się przesunąć między klatkami, zanim program uzna to za błąd / zgubienie twarzy.
+- **Za wysoka (np. 250–300):** tracker łatwiej „przeskoczy” na inną twarz, dłoń, plakat albo wzór w tle i zacznie zamazywać coś innego. To jedna z głównych przyczyn losowych zamazań.
+- **Za niska (np. 0–30):** tracker szybciej się podda przy szybkim ruchu głowy, gwałtownym ruchu kamery albo niskim FPS. Wtedy zamazanie zniknie w połowie ruchu.
+- **Jak ustawić:** zacznij od 130. Jeśli tracker przeskakuje na inne obiekty — zmniejsz (np. 70–100). Jeśli tracker gubi szybko poruszającą się twarz — zwiększ (np. 160–200). Zawsze po zmianie przewiń podejrzany fragment i sprawdź.
+- Przy dużych skokach na osi czasu (skok o więcej niż 3 klatki) program dodatkowo używa AI do ponownego zakotwiczenia: szuka najbliższej wykrytej twarzy w pobliżu ostatniego położenia i tylko wtedy, gdy jest w zasięgu tolerancji i ma podobny rozmiar (stosunek boków poniżej 2,5×), uznaje ją za tę samą twarz.
 
-Zakres: 0 do 100. Domyślnie: 15. Zapisywany w `settings.json`.
+### `Prędkość odtwarzania (kl./s)` — suwak 0,5–120 + pole tekstowe
 
-To jest feather, czyli miękkie przejście na krawędzi zamazania.
+- Prędkość podglądu, **nie** prędkość eksportowanego filmu. Eksport zawsze ma oryginalny FPS.
+- Domyślnie ustawiana na FPS wczytanego filmu.
+- Możesz wpisać wartość ręcznie w polu obok suwaka (np. `12.5`) i zatwierdzić `Enter` albo kliknięciem poza pole. Wartość jest zaokrąglana do 0,5 i ograniczana do zakresu 0,5–120.
+- Niskie wartości (np. 5–10 kl./s) są idealne do dokładnego sprawdzenia, czy zamazanie trzyma się twarzy. Wysokie (np. 50–120) do szybkiego przeglądu całego filmu.
 
-- **0:** ostra granica. Widać dokładnie, gdzie kończy się zamazanie.
-- **15 (domyślne):** lekkie zmiękczenie. Dobre do większości nagrań.
-- **50-100:** bardzo miękkie, rozmyte przejście. Zamazanie „rozpływa" się na tło.
+### `CIRCLE` — checkbox (domyślnie zaznaczony)
 
-W trybie BLACKBOX wtapianie nie działa, bo czarny prostokąt jest wstawiany bez miękkiego przejścia.
+- **Zaznaczony:** zamazanie ma kształt owalu / elipsy wpisanej w ramkę trackera. To domyślny, najbardziej naturalny kształt dla twarzy.
+- **Odznaczony:** zamazanie ma kształt prostokąta (cała ramka).
+- Działa też dla trybu BLACKBOX (czarny owal vs czarny prostokąt) i dla wielokąta? Nie — jeśli tracker jest wielokątem LINE, kształt wielokąta ma pierwszeństwo nad CIRCLE.
 
-Praktyka: jeśli na eksporcie widać „plamę" z ostrą krawędzią, podnieś wtapianie do 25-35. Jeśli zamazanie zaczyna odsłaniać brzegi twarzy, zmniejsz wtapianie.
+### `BLACKBOX` — checkbox (domyślnie odznaczony)
 
-### Suwak: Tolerancja skoku
+- **Zaznaczony:** zamiast rozmycia wstawia jednolite czarne wypełnienie w kształcie owalu / prostokąta / wielokąta.
+- **Odznaczony:** normalne rozmycie albo pikselizacja.
+- Najmocniejsza anonimizacja (nic nie prześwituje), ale najbardziej widoczna w kadrze.
+- Wtapianie nie działa w tym trybie — krawędź jest ostra.
 
-Zakres: 0 do 300. Domyślnie: 130. Zapisywany w `settings.json`.
+### `LINE` — checkbox (domyślnie odznaczony)
 
-To jest najważniejszy suwak do walki z losowymi zamazaniami.
+- **Zaznaczony:** włącza tryb rysowania wielokąta.
+  - Klikaj kolejne punkty wielokąta lewym przyciskiem myszy.
+  - Podwójne kliknięcie zamyka kształt i tworzy tracker-wielokąt.
+  - Prawy przycisk myszy kasuje rozpoczęty wielokąt (punkty znikają).
+  - Włączenie / wyłączenie LINE kasuje rozpoczęty, niedokończony wielokąt.
+- **Odznaczony:** normalne tryby AUTO / MANUAL (prostokąt).
+- Po co wielokąt: gdy chcesz zamazać tylko część twarzy, nieregularny kształt (np. twarz częściowo za czymś), albo gdy prostokąt / owal zahacza o coś, czego nie chcesz zamazywać.
+- Wielokąt skaluje się razem z trackerem: punkty są zapamiętywane względem początkowej ramki i przeliczane przy zmianie rozmiaru.
 
-Mówi trackerowi, o ile pikseli środek ramki może się przesunąć między klatkami, żeby program uznał to za tę samą twarz.
+### `PIXEL` — checkbox (domyślnie odznaczony)
 
-- **Niska wartość (np. 30-60):** tracker jest „podejrzliwy". Przy szybkim ruchu głowy albo przy skoku kamery szybko uzna, że twarz została zgubiona, i zakończy segment. Mniej fałszywych przeskoków, ale więcej przerwań śledzenia przy szybkim ruchu.
-- **Wysoka wartość (np. 200-300):** tracker jest „tolerancyjny". Pozwala na duże skoki. Śledzenie rzadziej się przerywa, ale częściej przeskakuje na inną osobę, na plakat, na rękę albo na tło. To jest przyczyna zamazań w losowych miejscach.
-- **130 (domyślne):** kompromis do nagrań z umiarkowanym ruchem.
+- **Zaznaczony:** zamazanie to pikselizacja (mozaika) zamiast rozmycia Gaussa.
+- **Odznaczony:** rozmycie Gaussa (albo BLACKBOX, jeśli ten jest zaznaczony).
+- Siła pikselizacji zależy od suwaka **Rozmycie**.
+- Pikselizacja przy zbyt niskim **Rozmyciu** może nadal pozwalać odgadnąć twarz — sprawdź na pauzie i na zoomie.
 
-Jak używać:
+### Pasek statusu (na samym dole)
 
-- Film statyczny, kamera na statywie, osoba mało się rusza: możesz zejść do 80-100.
-- Film z ręki, dużo ruchu, szybkie zwroty głowy: zostaw 130 albo podnieś do 150, ale wtedy częściej sprawdzaj błędy.
-- Po zmianie tego suwaka musisz jeszcze raz przejść przez film, bo suwak działa na bieżąco przy śledzeniu, a nie wstecz na już zapisane trajektorie.
+Pokazuje na bieżąco:
 
-Przy skokach o więcej niż 3 klatki (np. przeciągnięcie suwaka czasu) program robi ponowną detekcję AI i szuka twarzy w pobliżu ostatniej pozycji, z limitem zależnym od tego suwaka. Im mniejsza tolerancja, tym mniejszy promień poszukiwań i mniejsza szansa na złapanie obcej twarzy.
+```
+Klatka: 123/1250 | Zoom: 1.0x | Aktywne twarze: 2 | Kształt: OWAL | Rozmycie: GAUSS
+```
 
-### Suwak + pole: Prędkość odtwarzania (kl./s)
+albo w trybie zdjęcia:
 
-Zakres suwaka: 0.5 do 120 klatek na sekundę, krok 0.5. Domyślnie: FPS wczytanego filmu.
+```
+ZDJĘCIE | Zoom: 2.5x | Twarzy: 1 | Kształt: WIELOKĄT (LINE) | Rozmycie: PIXEL
+```
 
-To jest tylko prędkość podglądu, nie prędkość eksportu. Eksport zawsze zachowuje oryginalny FPS.
-
-- Przeciągasz suwak albo wpisujesz liczbę w polu obok i naciskasz **Enter**.
-- Pole akceptuje też przecinek, np. `25,0`.
-- Program zaokrągla do 0.5.
-
-Praktyka:
-
-- Do dokładnej kontroli: 5-10 kl./s. Film idzie wolno, łatwo złapać moment odwrócenia głowy.
-- Do szybkiego przeglądu: 50-100 kl./s. Program pomija klatki, żeby nadążyć.
-- Do normalnej pracy: zostaw FPS filmu.
-
-W trybie zdjęcia suwak i pole są zablokowane.
-
-### Checkbox: CIRCLE
-
-Domyślnie zaznaczony.
-
-- **Zaznaczony:** zamazanie ma kształt elipsy wpisanej w ramkę. To jest kształt najbliższy twarzy. Mniej zamazuje tła po bokach.
-- **Odznaczony:** zamazanie ma kształt prostokąta, całej ramki.
-
-CIRCLE działa tylko wtedy, gdy nie jest włączony LINE. Jeśli rysujesz wielokąt LINE, kształt wielokąta ma pierwszeństwo.
-
-Jeśli odznaczysz CIRCLE i BLACKBOX jest odznaczony, dostajesz prostokątne rozmycie Gaussa albo prostokątną pikselozę.
-
-### Checkbox: BLACKBOX
-
-Domyślnie odznaczony.
-
-- **Zaznaczony:** zamiast rozmycia wstawia czarny obszar. Jeśli CIRCLE jest zaznaczony, to czarna elipsa. Jeśli odznaczony, to czarny prostokąt. Wtapianie nie działa w tym trybie.
-- **Odznaczony:** normalne rozmycie albo pikseloza.
-
-BLACKBOX jest najmocniejszy, nic nie prześwituje. Używaj, gdy rozmycie przy 100 nadal pozwala rozpoznać osobę albo gdy chcesz styl „czarny pasek".
-
-### Checkbox: LINE
-
-Domyślnie odznaczony.
-
-Włącza tryb rysowania wielokąta. Po włączeniu:
-
-- Klikasz kolejne punkty na obrazie. Każdy klik dodaje punkt.
-- Na ekranie widać linie łączące punkty oraz linię podglądu do kursora.
-- Podwójne kliknięcie zamyka wielokąt i tworzy tracker o kształcie tego wielokąta.
-- Prawy przycisk myszki kasuje rysowany wielokąt i zaczyna od nowa.
-- Przełączenie LINE czyści narysowane punkty.
-
-Wielokąt jest zapisywany jako punkty względne wobec ramki. Przy śledzeniu wielokąt skaluje się razem z ramką. Dzięki temu możesz zamazać np. tylko twarz bez włosów, tylko tablicę, tylko nieregularny kształt.
-
-Jeśli włączysz LINE, a potem klikniesz w twarz bez rysowania wielokąta, nic się nie stanie. Musisz narysować co najmniej 3 punkty i zamknąć podwójnym kliknięciem.
-
-### Checkbox: PIXEL
-
-Domyślnie odznaczony.
-
-- **Zaznaczony:** zamazanie to pikseloza (mozaika). Rozmiar bloków zależy od suwaka **Rozmycie**.
-- **Odznaczony:** zamazanie to rozmycie Gaussa.
-
-PIXEL jest czytelniejszy jako „celowe zamazanie" i często wygląda lepiej na nagraniach z internetu, gdzie rozmycie Gaussa można częściowo odtworzyć. Jeśli chcesz maksymalnej anonimowości, PIXEL z wysokim rozmyciem albo BLACKBOX są lepsze niż słabe rozmycie Gaussa.
+`Aktywne twarze` to liczba trackerów, które mają zamazanie na bieżącej klatce. Jeśli widzisz tu `0`, a na podglądzie jest zamazany obszar — to znaczy, że to nie tracker, tylko coś innego (np. artefakt wideo). Jeśli widzisz tu liczbę większą niż liczba twarzy, które chcesz zamazać — masz fałszywe trackery (patrz: Problem 1).
 
 ---
 
-## Tryby dodawania twarzy: AUTO, MANUAL, LINE
+## Mysz, zoom i rysowanie
 
-| Tryb | Jak dodać | Kiedy używać |
+### Na podglądzie wideo
+
+| Gest | Co robi |
+| --- | --- |
+| **Klik lewym na zieloną ramkę** | **AUTO** — dodaje tracker dla tej wykrytej twarzy. |
+| **Klik lewym poza zieloną ramką** | Nic nie dodaje. W pasku informacyjnym pojawi się `Klik (x,y) poza ramką.` |
+| **Przeciągnięcie lewym (rysowanie prostokąta)** | **MANUAL** — tworzy tracker-prostokąt o narysowanym rozmiarze. Minimum 8×8 px. |
+| **Najedź na środek ramki trackera** | Kursor zmienia się w „przesuwanie” (strzałki w 4 strony). Przeciągnięcie przesuwa całe zamazanie. |
+| **Najedź na krawędź / narożnik ramki trackera** | Kursor zmienia się w strzałki zmiany rozmiaru. Przeciągnięcie zmienia rozmiar zamazania. |
+| **Scroll (kółko myszy)** | Zoom 1,0×–12×, krok ×1,25. Zoom centruje się na pozycji kursora. |
+| **Prawy przycisk — klik (bez przeciągania)** | **Usuwa tracker** pod kursorem (ten, w którego owal / prostokąt kliknąłeś). To najszybszy sposób usuwania fałszywych zamazań. |
+| **Prawy przycisk — przeciągnięcie, gdy zoom > 1×** | Przesuwanie widoku (Pan). |
+| **Shift + lewy przycisk + przeciągnięcie** | Przesuwanie widoku (Pan) — niezależnie od zoomu. |
+| **LINE: klik lewym** | Dodaje kolejny punkt wielokąta. |
+| **LINE: podwójne kliknięcie** | Zamyka wielokąt i tworzy tracker-wielokąt (minimum 3 punkty, minimum 5×5 px). |
+| **LINE: prawy przycisk** | Kasuje rozpoczęty wielokąt (punkty). |
+
+### Co się dzieje, gdy przesuniesz / zmienisz rozmiar trackera nie na jego klatce startowej
+
+To jest subtelne i ważne:
+
+- Jeśli poprawiasz tracker **na jego klatce startowej** — poprawiasz ten sam segment od początku.
+- Jeśli poprawiasz tracker **na późniejszej klatce** — program **dzieli segment na dwa**:
+  - stary segment kończy się na klatce poprzedzającej bieżącą,
+  - nowy segment (z tym samym numerem `Twarz`, ale nowym `ID`) zaczyna się na bieżącej klatce z poprawioną ramką i nowym trackerem CSRT.
+- Dzięki temu poprawka w środku filmu nie psuje zamazania we wcześniejszych klatkach, gdzie stara ramka była dobra.
+
+### Zoom i Pan — wskazówki
+
+- Do precyzyjnej poprawki ramki: zatrzymaj odtwarzanie, przybliż scrollem, przesuń / zmień rozmiar, oddal przyciskiem **ZOOM 1:1**.
+- Zoom nie zmienia zamazania ani eksportu — tylko to, co widzisz.
+- Jeśli po zoomie klikasz „w pustkę”, sprawdź, czy kursor na pewno jest nad obrazem, a nie nad czarnym paskiem wokół niego.
+
+---
+
+## Ręczne kasowanie zamazania
+
+To jest kasowanie już dodanego zamazania (trackera). Nie myl go z:
+- **PAUSE** — to nie kasowanie, tylko zakończenie zamazania od bieżącej klatki w przód. To, co było wcześniej, zostaje.
+- **Kasuj znaczniki** — to kasowanie fragmentu do eksportu (OD/DO), a nie zamazania.
+- **Zielona ramka** — to tylko propozycja detektora. Jej się nie kasuje. Znika sama po zmianie klatki. Zamazaniem staje się dopiero po kliknięciu / narysowaniu.
+
+Skasowane zamazanie znika z podglądu i nie trafi do eksportu. Nie ma przycisku „przywróć” — po skasowaniu trzeba dodać zamazanie od nowa, jeśli było potrzebne.
+
+### Sposób 1 — prawy przycisk myszy na zamazaniu (na podglądzie, najszybszy)
+
+1. Zatrzymaj odtwarzanie (**⏹ STOP**).
+2. Przejdź na klatkę, na której widać zamazanie do skasowania.
+3. Jeśli jesteś w trybie **LINE** i masz rozpoczęty, niedokończony wielokąt (punkty na ekranie), najpierw go skasuj prawym przyciskiem albo wyłącz i włącz **LINE**. W przeciwnym razie prawy przycisk skasuje punkty wielokąta, a nie zamazanie.
+4. Najedź kursorem **na środek** zamazanego obszaru. Środek jest najpewniejszy.
+5. Kliknij **prawym przyciskiem myszy raz, bez przeciągania**.
+
+Co się dzieje w zależności od zoomu:
+
+| Sytuacja | Zachowanie prawego przycisku |
+| --- | --- |
+| Zoom 1:1 | Klik prawym = kasuje tracker pod kursorem. |
+| Zoom powyżej 1:1, klik bez przeciągnięcia | Klik prawym = kasuje tracker pod kursorem. |
+| Zoom powyżej 1:1, przeciągnięcie prawym | To nie jest kasowanie, tylko przesuwanie widoku (Pan). |
+
+Dlatego przy kasowaniu: **kliknij i od razu puść, nie przeciągaj**.
+
+Jak program sprawdza, czy trafiłeś:
+
+- Gdy **CIRCLE** jest zaznaczone (domyślnie), program sprawdza, czy kliknąłeś wewnątrz owalu. Ma ok. 25% zapasu poza owalem, ale klik przy samej krawędzi może nie trafić. Klik w środek zawsze trafia.
+- Gdy **CIRCLE** jest odznaczone, program sprawdza prostokąt trackera.
+- Gdy tracker to wielokąt **LINE**, program sprawdza jego ramkę ograniczającą (prostokąt wokół wielokąta), a nie sam kształt wielokąta.
+
+Jeśli po prawym kliku zamazanie nie zniknęło: kliknąłeś poza owalem / prostokątem, byłeś w trybie rysowania LINE z punktami, albo przeciągnąłeś mysz (Pan zamiast kasowania). Spróbuj kliknąć w środek albo użyj Sposobu 2.
+
+### Sposób 2 — przycisk X na liście po prawej (najpewniejszy)
+
+1. Znajdź na liście wpis tego zamazania: `Twarz N [ID...] [start-koniec]`.
+2. Jeśli nie wiesz, który to wpis, klikaj po kolei **IDŹ** przy wpisach — program skoczy do klatki startowej każdego segmentu i zobaczysz, który leży w złym miejscu.
+3. Kliknij **X** przy tym wpisie.
+
+**X kasuje tylko ten jeden segment.** Inne segmenty tej samej twarzy zostają.
+
+Używaj Sposobu 2 zawsze wtedy, gdy:
+- zamazania na siebie nachodzą (prawy przycisk może trafić w złe, bo program sprawdza trackery po kolei, a nie „ten na wierzchu”),
+- chcesz skasować segment, który na bieżącej klatce nie jest aktywny (np. zaczyna się później),
+- prawy przycisk nie trafia, bo zamazanie jest małe albo na krawędzi kadru.
+
+### Sposób 3 — Cofnij / Delete (tylko ostatnie zamazanie)
+
+- Przycisk **Cofnij** albo klawisz `Delete` usuwa **ostatnio dodany** tracker — czyli ostatni wpis na liście.
+- To **nie** jest „skasuj zamazanie pod kursorem”. Jeśli chcesz skasować inne zamazanie niż ostatnie, nie używaj Cofnij, użyj Sposobu 1 albo 2.
+
+### Sposób 4 — Wyczyść (wszystkie zamazania)
+
+- Przycisk **Wyczyść** usuwa wszystkie trackery i wszystkie punkty wielokąta.
+- Nie kasuje wczytanego pliku ani znaczników eksportu.
+- Używaj tylko wtedy, gdy naprawdę chcesz zacząć zamazywanie od zera.
+
+### Ważne: kasowanie usuwa cały segment, nie tylko „odtąd”
+
+Przycisk **X**, prawy przycisk i **Cofnij** kasują **cały segment** `[start-koniec]`, a nie tylko fragment od bieżącej klatki.
+
+Przykład: masz segment `Twarz 1 [ID3] [100-300]`. Jesteś na klatce 200 i klikasz **X**. Znika zamazanie z klatek 100-300, nie tylko 200-300.
+
+Jeśli chcesz skasować tylko „ogon” segmentu, czyli od jakiejś klatki w przód, a początek zostawić:
+
+1. Przejdź na klatkę, od której zamazanie ma zniknąć.
+2. Przeciągnij lekko ten tracker (środek albo krawędź). Program podzieli segment na dwa: stary kończy się na klatce poprzedzającej, nowy zaczyna się na bieżącej klatce.
+3. Na liście pojawi się nowy wpis dla tego samego numeru `Twarz`, ale z nowym `ID`.
+4. Kliknij **X** przy tym nowym wpisie. Stary segment zostaje, ogon znika.
+
+To jest ten sam mechanizm, który jest opisany w Problemie 2 jako podział segmentu przy odwróceniu twarzy.
+
+### Co się dzieje z poprzednim segmentem tej samej twarzy po skasowaniu
+
+Gdy kasujesz segment, a ta sama twarz ma wcześniejszy segment, który był zakończony (miał ustawiony koniec), program „odblokowuje” ten wcześniejszy segment — jego koniec wraca na otwarty (`...`).
+
+Przykład:
+- Było: `Twarz 1 [ID2] [0-100]` i `Twarz 1 [ID3] [101-...]`.
+- Kasujesz `ID3` (X / prawy przycisk / Cofnij).
+- Zostaje: `Twarz 1 [ID2] [0-...]` — czyli zamazanie znowu trwa bez przerwy.
+
+Dlatego po każdym skasowaniu sprawdź listę — czasem program automatycznie wydłuży poprzedni segment i trzeba go potem skrócić przyciskiem **PAUSE** na właściwej klatce.
+
+### Jak sprawdzić, czy kasowanie się udało
+
+1. Przewiń o kilka klatek wstecz i w przód (`+1` / `-1`). Zamazanie ma zniknąć na całym przedziale tego segmentu.
+2. Sprawdź listę po prawej — wpisu ma już nie być.
+3. Sprawdź pasek statusu: `Aktywne twarze: N` ma się zmniejszyć o 1 na klatkach, gdzie to zamazanie było jedyne.
+4. Dopiero wtedy eksportuj.
+
+### Najczęstsze błędy przy ręcznym kasowaniu
+
+| Błąd | Dlaczego nie działa |
+| --- | --- |
+| Prawy przycisk z przeciągnięciem przy zoomie | To jest Pan (przesuwanie widoku), nie kasowanie. Kliknij bez przeciągania. |
+| Prawy przycisk przy rozpoczętym wielokącie LINE | Kasuje punkty wielokąta, nie tracker. Najpierw skończ albo skasuj wielokąt. |
+| Klik na krawędzi owalu przy włączonym CIRCLE | Klik poza owalem nie trafia. Kliknij w środek zamazania. |
+| Cofnij, żeby skasować zamazanie pod kursorem | Cofnij kasuje ostatni dodany tracker, nie ten pod kursorem. Użyj X albo prawego przycisku. |
+| PAUSE zamiast kasowania | PAUSE tylko kończy zamazanie od bieżącej klatki. Wcześniejsze klatki zostają zamazane. |
+| Kasuj znaczniki zamiast kasowania zamazania | Kasuj znaczniki kasuje fragment do eksportu, nie tracker. Zamazanie zostanie. |
+
+## Ręczna edycja ramki — zmiana położenia i rozmiaru chwytając myszką
+
+W README wcześniej było o tym tylko zdanie w tabeli myszy: „środek = przesuwanie, krawędź = zmiana rozmiaru”. Tu jest pełny opis, bo to jest główny sposób poprawiania zamazania, które leży za wysoko, za nisko, za ciasno albo „odjechało” od twarzy.
+
+Edycja dotyczy **geometrii** ramki: gdzie leży i jak duża jest. Nie zmienia siły rozmycia, kształtu (CIRCLE / BLACKBOX / PIXEL) ani przedziału klatek — chyba że edytujesz nie na klatce startowej, wtedy program dzieli segment (patrz dalej: „Co się dzieje po puszczeniu przycisku”).
+
+### Zanim zaczniesz — 3 warunki
+
+1. **Zatrzymaj odtwarzanie** (⏹ STOP). Edycji nie robi się w ruchu.
+2. **Przejdź na klatkę, na której to zamazanie jest aktywne.** Czyli klatka musi leżeć w przedziale tego segmentu: od `start_frame` do `end_frame` albo do końca, jeśli segment jest otwarty (`...`). Na klatce spoza przedziału program nie pokaże chwytów do tej ramki i jej nie złapiesz.
+3. **Nie trzymaj Shift i nie rysuj wielokąta LINE.** Shift + lewy przycisk to przesuwanie widoku (Pan), a nie edycja. A jeśli w trybie LINE masz już rozpoczęte punkty wielokąta, lewy przycisk doda kolejny punkt, a nie złapie ramki. Najpierw skasuj rozpoczęty wielokąt prawym przyciskiem.
+
+### Krok 1. Najedź myszą — nie klikaj od razu
+
+Chwyty działają tylko po najechaniu. Nie klikaj na ślepo w zamazany obszar.
+
+Najedź kursorem na ramkę i poczekaj na 2 sygnały:
+
+- pojawi się **turkusowa ramka** z kwadracikami w narożnikach i krzyżykiem na środku,
+- zmieni się **kształt kursora**.
+
+Jeśli ramka się nie pojawiła, nie jesteś nad chwytem tego trackera. Przesuń kursor bliżej środka / krawędzi / narożnika.
+
+### Krok 2. Który chwyt gdzie jest — 9 stref
+
+Program sprawdza strefy w tej kolejności: najpierw środek, potem narożniki, potem krawędzie. Przy nachodzących na siebie zamazaniach wygrywa ostatnio dodany tracker.
+
+| Strefa, na którą najeżdżasz | Co złapiesz | Kursor |
 | --- | --- | --- |
-| AUTO | Jedno kliknięcie na zielonej ramce | Detektor dobrze widzi twarz |
-| MANUAL | Przeciągnięcie prostokąta | Detektor nie widzi twarzy, albo chcesz zamazać coś innego niż twarz |
-| LINE | Klikasz punkty, 2x klik zamyka | Nieregularny kształt, chcesz ominąć włosy, rękę, tło |
+| **Środek ramki** — mały okrąg wokół środka | **Przesuwanie całej ramki** | Strzałki w 4 strony (`fleur`) |
+| **Lewy górny narożnik** | Zmiana rozmiaru: lewa + górna krawędź naraz | Przekątna NW-SE |
+| **Prawy górny narożnik** | Zmiana rozmiaru: prawa + górna krawędź naraz | Przekątna NE-SW |
+| **Lewy dolny narożnik** | Zmiana rozmiaru: lewa + dolna krawędź naraz | Przekątna NE-SW |
+| **Prawy dolny narożnik** | Zmiana rozmiaru: prawa + dolna krawędź naraz | Przekątna NW-SE |
+| **Lewa krawędź** (nie narożnik) | Zmiana rozmiaru: tylko szerokość, prawa krawędź stoi w miejscu | Pozioma podwójna strzałka |
+| **Prawa krawędź** (nie narożnik) | Zmiana rozmiaru: tylko szerokość, lewa krawędź stoi w miejscu | Pozioma podwójna strzałka |
+| **Górna krawędź** (nie narożnik) | Zmiana rozmiaru: tylko wysokość, dolna krawędź stoi w miejscu | Pionowa podwójna strzałka |
+| **Dolna krawędź** (nie narożnik) | Zmiana rozmiaru: tylko wysokość, górna krawędź stoi w miejscu | Pionowa podwójna strzałka |
 
-Wszystkie trzy tryby tworzą ten sam rodzaj trackera. Różnią się tylko tym, jak powstaje początkowa ramka i kształt.
+> **Dokładność chwytu zależy od zoomu.** Przy zoomie 1:1 strefa chwytu jest szersza i łatwiej złapać. Przy dużym zoomie strefa jest węższa w pikselach oryginału i trzeba najechać dokładniej. Dlatego do precyzyjnej poprawki przybliż obraz scrollem, ale celuj dokładnie w narożnik / krawędź / środek, a nie „gdzieś w okolice”.
 
-Typ jest widoczny na liście jako litera: `A`, `M`, `L`.
+### Krok 3. Złap i przeciągnij lewym przyciskiem
+
+Gdy kursor już pokazuje właściwy chwyt:
+
+1. **Wciśnij i trzymaj lewy przycisk myszy.**
+2. **Przeciągnij** — ramka podąża za myszą na żywo, a zamazanie też się przesuwa / rozciąga na bieżącej klatce.
+3. **Puść lewy przycisk**, gdy ramka leży dobrze.
+
+Nie klikaj i nie puszczaj od razu — samo kliknięcie bez przeciągnięcia nic nie zmieni, a przy kliknięciu poza chwytem program potraktuje to jako próbę dodania nowego zamazania (klik na zieloną ramkę = AUTO, przeciągnięcie w pustym miejscu = nowy MANUAL).
+
+### Zmiana położenia — chwyt za środek
+
+- Złap za **środek** (kursor 4 strzałki).
+- Przeciągnij ramkę w nowe miejsce.
+- **Rozmiar się nie zmienia.** Zmienia się tylko `x` i `y` (lewy górny róg).
+- Ramka nie wyjdzie poza kadr: program ogranicza ją do `x` od `0` do `szerokość_kadru − szerokość_ramki` i `y` od `0` do `wysokość_kadru − wysokość_ramki`. Jeśli przeciągniesz za krawędź kadru, ramka zatrzyma się na krawędzi.
+- Przy wielokącie LINE przesunięcie ramki przesuwa też cały wielokąt, bo punkty wielokąta są zapamiętane względem ramki.
+
+Kiedy używać: zamazanie jest dobrego rozmiaru, ale leży za wysoko / za nisko / w bok od twarzy, bo twarz się przesunęła albo tracker lekko „odjechał”.
+
+### Zmiana rozmiaru — chwyt za krawędź albo narożnik
+
+- Złap za **krawędź** albo **narożnik** (kursor strzałki zmiany rozmiaru).
+- Przeciągnij na zewnątrz, żeby powiększyć, do środka, żeby pomniejszyć.
+
+Jak zachowuje się przeciwległa strona:
+
+| Złapany chwyt | Co się rusza | Co stoi w miejscu |
+| --- | --- | --- |
+| Prawa krawędź | Prawa krawędź | Lewa krawędź |
+| Dolna krawędź | Dolna krawędź | Górna krawędź |
+| Lewa krawędź | Lewa krawędź | Prawa krawędź |
+| Górna krawędź | Górna krawędź | Dolna krawędź |
+| Prawy dolny narożnik | Prawa + dolna | Lewy górny narożnik |
+| Lewy górny narożnik | Lewa + górna | Prawy dolny narożnik |
+| Prawy górny narożnik | Prawa + górna | Lewy dolny narożnik |
+| Lewy dolny narożnik | Lewa + dolna | Prawy górny narożnik |
+
+Ograniczenia przy zmianie rozmiaru:
+
+- **Minimalny rozmiar to 10 × 10 px.** Mniejszej ramki nie zrobisz. Jeśli przeciągniesz krawędź za drugą stronę, ramka zatrzyma się na 10 px.
+- **Ramka nie wyjdzie poza kadr.** Nie da się jej rozciągnąć poza obraz.
+- Przy zmianie rozmiaru **nie trzyma proporcji** — możesz zrobić ramkę szeroką i niską albo wąską i wysoką, niezależnie.
+- Przy wielokącie LINE zmiana rozmiaru ramki **rozciąga też wielokąt proporcjonalnie**: punkty są przeliczane jako `nowy_rozmiar / stary_rozmiar` osobno dla szerokości i wysokości. Czyli jeśli poszerzysz ramkę 2 razy, wielokąt też poszerzy się 2 razy.
+
+Kiedy używać: twarz jest bliżej / dalej od kamery niż na klatce startowej, osoba się obróciła i potrzebuje szerszej / węższej ramki, albo początkowa ramka była za ciasna i widać uszy / włosy / brodę.
+
+### Co się dzieje po puszczeniu przycisku — to najważniejsze
+
+To, co się stanie po puszczeniu, zależy od tego, **na której klatce edytujesz**.
+
+#### Wariant A — edytujesz na klatce startowej segmentu
+
+Edytujesz ten sam segment od początku:
+
+- Nowa ramka staje się ramką startową tego segmentu.
+- Program tworzy od nowa tracker CSRT od tej nowej ramki na tej klatce.
+- Wcześniejsze klatki nie istnieją (to jest start), więc nic się nie psuje.
+- Na liście nie pojawia się nowy wpis. Ten sam `ID` zostaje, tylko z nową ramką.
+
+#### Wariant B — edytujesz na późniejszej klatce (nie na startowej)
+
+Program **dzieli segment na dwa**:
+
+- Stary segment kończy się na klatce **poprzedzającej** bieżącą (`end_frame = bieżąca_klatka − 1`).
+- Powstaje nowy segment z tym samym numerem `Twarz`, ale z nowym `ID`, który zaczyna się na bieżącej klatce z Twoją poprawioną ramką i nowym trackerem CSRT.
+- Wcześniejsze klatki zachowują starą, dobrą ramkę. Późniejsze klatki dostają nową ramkę.
+
+Dzięki temu poprawka w środku filmu nie psuje zamazania we wcześniejszych klatkach, gdzie stara ramka była dobra.
+
+Przykład:
+- Było: `Twarz 1 [ID3] [100-...]`.
+- Edytujesz ramkę na klatce 200.
+- Po puszczeniu jest: `Twarz 1 [ID3] [100-199]` i `Twarz 1 [ID4] [200-...]`.
+
+#### Wariant C — edytujesz zdjęcie
+
+Zdjęcie ma tylko 1 klatkę (klatka 0), więc nie ma podziału. Nowa ramka po prostu zastępuje starą.
+
+### Jak sprawdzić po edycji, czy jest dobrze
+
+1. Zostań na tej klatce i sprawdź, czy ramka / zamazanie leży dokładnie na twarzy. Przy owalach (CIRCLE) zostaw mały zapas wokół twarzy — włosy, uszy i broda nie mogą wystawać.
+2. Przewiń o kilka klatek w przód (`+1`, `+5`) i wstecz (`−1`, `−5`). Czy tracker od nowej ramki trzyma się twarzy? Czy nie przeskoczył na tło?
+3. Sprawdź listę po prawej: jeśli edytowałeś nie na starcie, pojawił się nowy wpis z nowym `ID`. To normalne — to podział, nie duplikat.
+4. Jeśli po edycji tracker zaczyna „pływać” albo odjeżdżać, cofnij poprawkę (skasuj nowy segment przyciskiem **X** i dodaj tracker od nowa na tej klatce) albo zmniejsz **Tolerancję skoku**.
+
+### Typowe sytuacje — którą poprawkę wybrać
+
+| Problem na podglądzie | Co złapać |
+| --- | --- |
+| Zamazanie dobrego rozmiaru, ale przesunięte w bok / w górę / w dół | Środek — przesuń całość |
+| Zamazanie za ciasne, widać uszy / włosy / brodę | Narożnik — powiększ w obie strony naraz |
+| Zamazanie za szerokie, zahacza o drugą osobę | Lewa albo prawa krawędź — zwęź tylko w poziomie |
+| Zamazanie za wysokie / za niskie, zahacza o czoło / szyję | Górna albo dolna krawędź — skróć tylko w pionie |
+| Twarz zbliżyła się do kamery i urosła | Prawy dolny narożnik — powiększ szerokość i wysokość |
+| Tracker odjechał i ramka leży na tle | Nie poprawiaj starej ramki w nieskończoność. Skasuj zły segment (X / prawy przycisk) i dodaj tracker od nowa na dobrej klatce. |
+
+### Najczęstsze błędy przy ręcznej edycji ramki
+
+| Błąd | Dlaczego nie działa |
+| --- | --- |
+| Klikasz bez czekania na zmianę kursora | Nie złapałeś chwytu. Program potraktuje to jako rysowanie nowego MANUAL albo klik AUTO. Najpierw najedź i poczekaj na turkusową ramkę i zmianę kursora. |
+| Trzymasz Shift podczas przeciągania | Shift + lewy przycisk to Pan (przesuwanie widoku), nie edycja ramki. Puść Shift. |
+| Masz rozpoczęte punkty wielokąta LINE | Lewy przycisk doda punkt wielokąta, nie złapie ramki. Skasuj punkty prawym przyciskiem. |
+| Edytujesz na klatce, gdzie segment nie jest aktywny | Nie ma chwytów do złapania. Przejdź na klatkę z przedziału `[start-koniec]` tego segmentu albo kliknij **IDŹ** przy nim na liście. |
+| Edytujesz, a po puszczeniu pojawia się drugi wpis na liście | To nie błąd, to podział segmentu (Wariant B). Stary segment kończy się przed Twoją edycją, nowy zaczyna się od niej. |
+| Poprawiasz ramkę na każdej klatce z osobna | Nie trzeba. Wystarczy poprawić raz na klatce, gdzie ramka zaczęła odjeżdżać — tracker CSRT poprowadzi nową ramkę dalej. Poprawianie klatka po klatce tworzy mnóstwo segmentów. |
+| Robisz ramkę idealnie „na styk” z twarzą | Zostaw zapas. Przy ruchu głowy twarz wyjdzie spod za ciasnej ramki. Lepiej trochę za duża niż za mała. |
+
+## Skróty klawiaturowe
+
+| Klawisz | Działanie |
+| --- | --- |
+| `←` / `→` | Poprzednia / następna klatka. |
+| `Shift + ←` / `Shift + →` | Skok o 10 klatek wstecz / w przód. |
+| `↑` / `↓` | Skok o 30 klatek w przód / wstecz. |
+| `Delete` | **Cofnij** — usuń ostatnio dodany tracker. |
 
 ---
 
 ## Jak działa śledzenie
 
-To jest ważne, żeby rozumieć błędy.
+1. **Detekcja (AI):** na wybranych klatkach detektor znajduje twarze i rysuje zielone ramki-kandydatów. Detekcja nie jest uruchamiana na każdej klatce odtwarzania — tylko przy zatrzymaniu, skoku i odświeżeniu.
+2. **Zatwierdzenie (Ty):** klik / przeciągnięcie / przycisk zamienia kandydata w tracker.
+3. **Śledzenie (CSRT):** tracker `cv2.TrackerCSRT` prowadzi ramkę z klatki na klatkę. Program pamięta trajektorię (`traj`) — czyli położenie ramki na każdej klatce, którą już policzył.
+4. **Ponowne zakotwiczenie (AI re-anchoring):** gdy przeskoczysz o więcej niż 3 klatki (np. suwakiem, przyciskiem `+30`, kliknięciem w oś czasu), program nie liczy CSRT klatka po klatce, tylko pyta AI o twarze na docelowej klatce i szuka najbliższej twarzy w zasięgu **Tolerancji skoku** i o podobnym rozmiarze. Jeśli ją znajdzie — tracker „przeskakuje” na nią. Jeśli nie — licznik zgubień rośnie.
+5. **Zgubienie:** jeśli tracker 2 razy z rzędu nie da rady (skok za duży, rozmiar zmienił się ponad 2,8×, ramka wyszła poza kadr w ponad 80%), a **Stop gdy zgubi** jest zaznaczone, tracker kończy segment (`end_frame`) i przestaje zamazywać. Jeśli **Stop gdy zgubi** jest odznaczone, tracker trzyma ostatnie położenie.
+6. **Ręczne zakończenie:** PAUSE, usunięcie trackera, podział segmentu przez poprawkę na późniejszej klatce.
 
-1. **Detekcja:** model AI znajduje twarze na bieżącej klatce i rysuje zielone ramki.
-2. **Dodanie trackera:** klikasz twarz albo rysujesz ramkę. Program tworzy tracker CSRT dla tej ramki.
-3. **Śledzenie klatka po klatce:** CSRT podąża za wzorcem obrazu z ramki. Nie rozpoznaje tożsamości. Nie wie, czy to ta sama osoba. On tylko podąża za tym, co wygląda podobnie w pobliżu.
-4. **Ponowne zakotwiczenie AI (re-anchoring):** gdy przeskoczysz o więcej niż 3 klatki, program nie liczy CSRT klatka po klatce. Zamiast tego robi nową detekcję AI na docelowej klatce i szuka twarzy najbliżej ostatniej pozycji, w limicie zależnym od Tolerancji skoku. Jeśli znajdzie, przeskakuje na nią. Jeśli nie znajdzie, oznacza stratę.
-5. **Zgubienie:** jeśli ramka skoczy za daleko, zmieni rozmiar za bardzo (ponad 2.8x) albo wyjdzie poza ekran, program liczy to jako zgubienie. Przy włączonym **Stop gdy zgubi** po 2-3 takich klatkach kończy segment.
-6. **Trajektoria:** program zapisuje pozycję ramki dla każdej klatki w segmencie w słowniku `traj`. Dzięki temu cofanie się po osi czasu nie liczy śledzenia od nowa.
-
-Wniosek: tracker nie wie, że twarz się odwróciła. Dla CSRT tył głowy, włosy i kark to nadal „ten sam wzorzec". Dlatego musisz ręcznie ucinać śledzenie, gdy twarz się odwraca. Program sam tego nie zrobi.
+> Tracker nie rozumie, co to jest „twarz z przodu”, „twarz z tyłu”, „ręka” ani „plakat”. On śledzi **wzór pikseli**, który mu wskazałeś. Dlatego potrafi dalej śledzić odwróconą głowę (patrz: Problem 2) i dlatego czasem „przeskoczy” na podobny wzór w tle (patrz: Problem 1). Twoja kontrola jest częścią działania programu, nie dodatkiem.
 
 ---
 
-## Eksport
+## Eksport wideo i zdjęć
 
 ### Eksport wideo
 
 1. Kliknij **Eksportuj / Zapisz**.
-2. Wybierz miejsce i nazwę pliku, np. `zamazane.mp4`.
-3. Pojawi się okno postępu z procentami i licznikiem klatek.
-4. Program przechodzi przez cały film klatka po klatce, od nowa liczy trackery i nakłada zamazania z bieżącymi ustawieniami suwaków.
-5. Na końcu, jeśli jest `ffmpeg.exe`, program dokleja dźwięk z oryginalnego pliku.
+2. Wybierz nazwę pliku `.mp4`.
+3. Program pokazuje okno postępu (`%` i licznik klatek).
+4. Program przetwarza film od nowa, klatka po klatce, nakładając zamazania zgodnie z trackerami i ich przedziałami `[start_frame – end_frame]` oraz bieżącymi ustawieniami suwaków i checkboxów (Rozmycie, Wtapianie, CIRCLE / BLACKBOX / PIXEL, LINE, Tolerancja skoku, Stop gdy zgubi).
+5. Jeśli jest `ffmpeg.exe`, program dokleja oryginalny dźwięk:
+   - bez zaznaczonych fragmentów: kopiuje / przekodowuje całą ścieżkę audio z oryginału,
+   - z zaznaczonymi fragmentami: wycina dźwięk dla każdego fragmentu (`atrim`) i łączy fragmenty w tej samej kolejności co wideo.
+6. Jeśli nie ma `ffmpeg.exe`, eksport zapisze wideo **bez dźwięku**.
 
-Ważne:
+**Ważne zasady eksportu:**
 
-- Eksport używa ustawień z momentu kliknięcia eksportu. Jeśli zmienisz suwaki po kliknięciu, eksport tego nie uwzględni.
-- Eksport liczy śledzenie od nowa, z bieżącymi ustawieniami **Tolerancja skoku** i **Stop gdy zgubi**. Jeśli w podglądzie było dobrze, a na eksporcie jest błąd, sprawdź, czy nie zmieniłeś tych ustawień między podglądem a eksportem.
-- Jeśli masz znaczniki OD / DO, program wyeksportuje tylko te fragmenty, połączone w jeden plik. Dźwięk dla każdego fragmentu jest wycinany i łączony osobno.
-- Jeśli nie masz znaczników, program eksportuje cały film.
-- Jeśli eksport się nie uda z dźwiękiem, program próbuje zapisać wideo bez dźwięku albo przepisać dźwięk do AAC 192k.
+- Eksportuje się to, co jest na liście trackerów. Zielone ramki, które nie zostały zatwierdzone, nie są eksportowane.
+- Jeśli nie ma znaczników eksportu — eksportowany jest cały film.
+- Jeśli są znaczniki — eksportowane są tylko zaznaczone fragmenty, połączone w kolejności.
+- Ustawienia zamazania z momentu eksportu dotyczą całego eksportowanego materiału. Nie da się mieć innego Rozmycia na początku filmu, a innego na końcu — chyba że wyeksportujesz film na raty i połączysz zewnętrznie.
+- Podczas eksportu nie klikaj w program — poczekaj na komunikat `Gotowe`.
 
 ### Eksport zdjęcia
 
-1. W trybie zdjęcia kliknij **Eksportuj / Zapisz**.
-2. Wybierz miejsce zapisu. Domyślna nazwa: `zamazane_nazwa_pliku.jpg`.
-3. Program zapisuje zdjęcie z bieżącymi zamazaniami.
-
-### Jakość i FPS eksportu
-
-Eksport zachowuje oryginalny rozmiar i FPS filmu. Kodek wideo to `mp4v`. Dźwięk, jeśli jest FFmpeg, to AAC 192k albo kopia oryginalnej ścieżki, zależnie od trybu.
+Jak eksport wideo, ale dla jednej klatki: program zapisuje zdjęcie z nałożonymi zamazaniami i bieżącymi ustawieniami. Nazwa domyślna: `zamazane_<oryginalna_nazwa>`.
 
 ---
 
 ## Zrzut ekranu
 
-Opisany w górnym pasku. Dodatkowa uwaga: zrzut używa bieżących trackerów i bieżących ustawień. Jeśli na bieżącej klatce tracker jest w trakcie rysowania albo masz włączony zoom, zrzut i tak zapisuje pełną klatkę źródłową, bez zoomu i bez pomocniczych ramek.
+- Przycisk **📸 Zrób zrzut ekranu** zapisuje bieżącą klatkę.
+- Checkbox **z blur** decyduje, czy zrzut ma zamazania (zaznaczony) czy jest czysty (odznaczony).
+- Zrzut używa tych samych ustawień zamazania co podgląd (Rozmycie, Wtapianie, CIRCLE / BLACKBOX / PIXEL).
+- Przydatny do: szybkiej kontroli jakości zamazania na zatrzymanej klatce, porównania przed / po, wysłania komuś jednej klatki do akceptacji bez eksportowania całego filmu.
 
 ---
 
-## Ustawienia zapisywane automatycznie
+## ⚠️ PROBLEM 1: Niepotrzebne zamazane obszary w losowych miejscach
 
-Przy zamykaniu programu zapisywany jest plik `settings.json` w katalogu programu. Zawiera tylko trzy wartości:
+### Jak to wygląda
+
+Na filmie pojawia się zamazany owal / prostokąt tam, gdzie nie ma twarzy do zamazania — np. na ścianie, firance, plakacie, koszulce, dłoni, plecach, fragmencie mebla, na drugiej osobie, którą wcale nie chciałeś zamazywać, albo zamazanie „wisi” w powietrzu tam, gdzie twarz już wyszła z kadru.
+
+### Dlaczego tak się dzieje
+
+To nie jest jeden błąd, tylko kilka różnych mechanizmów, które dają ten sam efekt. Zanim zaczniesz naprawiać, ustal, który to przypadek — bo każdy naprawia się inaczej:
+
+| Przyczyna | Jak ją rozpoznać |
+| --- | --- |
+| **1. Fałszywa detekcja AI** | Na bieżącej klatce jest zielona ramka tam, gdzie nie ma twarzy. AI uznało wzór / plakat / cień za twarz. |
+| **2. Tracker „przeskoczył” (drift / jump)** | Zamazanie na początku leżało dobrze na twarzy, a po kilku klatkach „odjechało” w bok i przykleiło się do czegoś innego. Często po szybkim ruchu głowy, ruchu kamery albo zasłonięciu twarzy. |
+| **3. Tracker nie zakończył się po zniknięciu twarzy** | Twarz wyszła z kadru / schowała się za kimś, a zamazanie zostało w miejscu, gdzie twarz była ostatnio. Często przy odznaczonym **Stop gdy zgubi** albo przy bardzo wysokiej **Tolerancji skoku**. |
+| **4. Ślepe skanowanie AI** | Po **Zamaż cały film (AI)** program dodał zamazania do wszystkiego, co AI uznało za twarz — w tym do fałszywych wykryć. Lista po prawej ma wtedy dużo wpisów, których nie dodawałeś ręcznie. |
+| **5. Stary tracker po poprawce** | Poprawiłeś ramkę na późniejszej klatce, program podzielił segment na dwa, a stary segment (przed poprawką) nadal zamazuje w swoim przedziale — i to właśnie ten stary fragment wygląda jak „losowe zamazanie”. |
+
+### Procedura naprawy — krok po kroku
+
+**Nie eksportuj, dopóki tego nie zrobisz. Naprawa po eksporcie oznacza eksport od nowa.**
+
+#### Krok 1. Zatrzymaj odtwarzanie
+
+Naciśnij **⏹ STOP** (jeśli film gra). Naprawiasz na zatrzymanych klatkach, nie w ruchu.
+
+#### Krok 2. Znajdź pierwszą klatkę, na której pojawia się złe zamazanie
+
+- Przewiń film suwakiem / przyciskami `+1` / `-1` albo klikaj w pasek znaczników.
+- Zatrzymaj się dokładnie na pierwszej klatce, gdzie zamazanie jest już w złym miejscu.
+- Zapamiętaj numer tej klatki (pole numeru klatki / licznik czasu).
+
+#### Krok 3. Zidentyfikuj, który tracker to robi
+
+Masz trzy równorzędne sposoby — wybierz ten, który jest najszybszy w danym momencie:
+
+- **Sposób A — lista po prawej:** klikaj po kolei **IDŹ** przy każdym wpisie. Ten, który skacze do klatki w pobliżu Twojej złej klatki i którego ramka leży w złym miejscu, to winowajca.
+- **Sposób B — pasek statusu:** na złej klatce sprawdź `Aktywne twarze: N`. Jeśli `N` jest większe niż liczba twarzy, które chcesz zamazać, masz co najmniej jeden zbędny tracker.
+- **Sposób C — najechanie myszą:** najedź na złe zamazanie. Jeśli pojawi się turkusowa ramka z uchwytami — to jest aktywny tracker.
+
+#### Krok 4. Usuń tylko ten jeden zły tracker
+
+Wybierz **jeden** sposób — nie rób wszystkich naraz, bo usuniesz więcej niż trzeba:
+
+- **Najszybszy:** prawy przycisk myszy na złym zamazaniu (klik bez przeciągania, przy zoomie 1:1). Tracker pod kursorem znika.
+- **Najpewniejszy:** w liście po prawej kliknij **X** przy właściwym wpisie (`Twarz N [ID...]`).
+- **Ostatni dodany:** jeśli złe zamazanie to właśnie to, co dodałeś przed chwilą, kliknij **Cofnij** (albo `Delete`).
+
+**Sprawdź od razu:** przewiń o kilka klatek wstecz i w przód. Czy złe zamazanie zniknęło na całym podejrzanym fragmencie? Czy dobre zamazania zostały?
+
+#### Krok 5. Jeśli złe zamazanie wraca w kolejnych klatkach — to nie jeden tracker, tylko seria
+
+Zdarza się po skanowaniu AI: ta sama fałszywa „twarz” została wykryta jako kilka kolejnych segmentów albo tracker po usunięciu został odtworzony przez ponowne zakotwiczenie.
+
+- Przewiń przez cały podejrzany fragment klatka po klatce (`+1` / `-1`).
+- Usuwaj kolejne złe wpisy z listy (**X**), aż fragment będzie czysty.
+- Jeśli lista jest bardzo zaśmiecona, rozważ **Wyczyść** i dodanie zamazań ręcznie od nowa — czasem to jest szybsze niż usuwanie 20 fałszywych wpisów.
+
+#### Krok 6. Jeśli tracker „odjeżdża” z dobrej twarzy na zły obiekt — zmniejsz Tolerancję skoku
+
+- Ustaw **Tolerancję skoku** niżej, np. z `130` na `70–100`.
+- Wróć do klatki, gdzie tracker jeszcze leżał dobrze.
+- Usuń zły segment (Krok 4) i dodaj tracker od nowa od tej dobrej klatki (klik na zieloną ramkę / przeciągnięcie).
+- Przewiń podejrzany fragment i sprawdź, czy tracker tym razem trzyma się twarzy.
+
+> Nie zmniejszaj Tolerancji do `0` „na wszelki wypadek” — wtedy tracker będzie się poddawał przy każdym szybszym ruchu głowy i zamazanie będzie znikać w połowie sceny. Szukaj wartości, przy której tracker trzyma twarz, ale nie przeskakuje na tło.
+
+#### Krok 7. Jeśli zamazanie „wisi” tam, gdzie twarz już wyszła — włącz Stop gdy zgubi
+
+- Zaznacz **Stop gdy zgubi** (powinno być zaznaczone domyślnie).
+- Jeśli problem dotyczy już dodanego trackera, usuń go i dodaj od nowa z włączonym **Stop gdy zgubi** — zmiana checkboxa nie cofa wstecz już policzonej trajektorii, tylko wpływa na dalsze śledzenie i na eksport.
+- Przy eksporcie program też respektuje ten checkbox: przy zaznaczonym przestaje zamazywać po 2–3 zgubionych klatkach, przy odznaczonym trzyma ostatnie położenie.
+
+#### Krok 8. Jeśli to był błąd AI (zielona ramka na czymś, co twarzą nie jest)
+
+- **Nie klikaj** tej zielonej ramki i **nie** używaj na tej klatce przycisku **Zamaż wszystkie zielone na bieżącej klatce** — bo to właśnie doda fałszywy tracker.
+- Jeśli fałszywy tracker już jest — usuń go (Krok 4).
+- Spróbuj zmienić model w liście `Model:` (np. YuNet → SCRFD 500M albo odwrotnie) i zobacz, czy fałszywa zielona ramka znika na tej klatce. Jeśli tak, pracuj dalej na tym modelu.
+- Jeśli fałszywa ramka pojawia się tylko na jednej klatce i nie zamieniłeś jej w tracker, zignoruj ją — sama w sobie nie trafi do eksportu.
+
+#### Krok 9. Kontrola końcowa przed eksportem
+
+1. Przewiń cały film na przyspieszeniu (np. 50 kl./s) i patrz tylko na to, czy zamazania są tam, gdzie powinny.
+2. Zatrzymaj się na każdym podejrzanym miejscu i sprawdź klatka po klatce.
+3. Sprawdź listę po prawej: liczba wpisów powinna odpowiadać liczbie osób × liczbie segmentów. Jeśli jest wyraźnie za dużo wpisów — coś jeszcze jest do usunięcia.
+4. Zrób zrzut ekranu (**📸 Zrób zrzut ekranu** + **z blur**) na najtrudniejszych klatkach i obejrzyj go na pełnym ekranie.
+5. Dopiero wtedy **Eksportuj / Zapisz**.
+
+### Czego NIE robić przy losowych zamazaniach
+
+- **Nie** zakrywaj złego zamazania drugim, większym zamazaniem. W eksporcie będziesz mieć dwa zamazania, a problem zostanie.
+- **Nie** licz na to, że „w eksporcie samo zniknie”. Eksport używa tych samych trackerów co podgląd. Jeśli widzisz złe zamazanie na podglądzie, będzie ono też w eksporcie.
+- **Nie** używaj **Wyczyść**, jeśli masz już dużo dobrej pracy — najpierw usuń tylko złe wpisy (**X** / prawy przycisk). **Wyczyść** to ostateczność.
+- **Nie** zmieniaj **Rozmycia** ani **Wtapiania**, żeby „ukryć” złe zamazanie. To zmienia wygląd wszystkich zamazań, a złe zamazanie nadal będzie w złym miejscu.
+
+---
+
+## ⚠️ PROBLEM 2: Twarz nadal śledzona, ale już odwrócona — czy dalej zamazywać?
+
+### O co chodzi
+
+Osoba odwraca głowę tyłem / profilem. Na podglądzie widzisz, że zamazany owal nadal podąża za głową — mimo że twarzy (oczu, nosa, ust) już nie widać. Pytanie: czy to zamazanie jest jeszcze potrzebne?
+
+### Dlaczego program to robi — to nie jest błąd
+
+Tracker CSRT nie rozpoznaje „twarzy”. On śledzi **wzór pikseli**, który mu wskazałeś na klatce startowej: kształt głowy, włosy, ucho, fragment szyi, cień.
+
+Dlatego:
+
+- gdy twarz odwraca się tyłem, tracker nie „wie”, że twarzy już nie widać — on nadal widzi głowę i ją śledzi,
+- zielona ramka AI może zniknąć (bo AI nie wykrywa już twarzy z tyłu), ale turkusowe zamazanie trackera zostaje,
+- program **sam z siebie nie przerwie** zamazania przy odwróceniu. To Ty musisz zdecydować, kiedy je zakończyć.
+
+### Kiedy ZOSTAWIĆ zamazanie na odwróconej głowie
+
+Zostaw, gdy odwrócona głowa nadal pozwala rozpoznać osobę albo gdy zamazanie jest częścią ciągłości sceny:
+
+- widać **profil** — bok twarzy, nos, usta, oko z boku często wystarczą do rozpoznania,
+- widać **ucho + charakterystyczną fryzurę / kolor włosów / łysinę / tatuaż na karku / znamię**,
+- osoba jest blisko kamery i odwrócenie trwa tylko chwilę (1–2 sekundy) — cięcie zamazania na tak krótko i tak częste „mruganie” zamazania wygląda gorzej niż zostawienie go,
+- w kadrze jest mało osób i odwrócona głowa jest głównym obiektem — widz i tak skojarzy ją z osobą sprzed chwili,
+- zamazujesz ze względów prawnych / RODO i wolisz być po bezpiecznej stronie.
+
+### Kiedy PRZERWAĆ zamazanie na odwróconej głowie
+
+Przerwij, gdy zamazanie nie chroni już nic, a tylko psuje obraz:
+
+- widać **tylko tył głowy** z daleka, w tłumie, bez żadnych cech charakterystycznych, a osoba za chwilę zniknie z kadru,
+- głowa odwróciła się **na stałe** (osoba odchodzi, siada tyłem, rozmawia z kimś plecami do kamery) i nie wróci przodem w tej scenie,
+- zamazanie na potylicy zasłania coś ważnego w kadrze (np. inną osobę, tablicę, przedmiot), a nie chroni prywatności,
+- tracker po odwróceniu zaczyna „pływać” — bo tył głowy ma mniej charakterystyczny wzór niż twarz — i zamazanie odjeżdża na tło (wtedy wracasz do Problemu 1).
+
+**Zasada praktyczna:** jeśli po odwróceniu nie da się rozpoznać osoby po samej głowie (bez kontekstu sceny), a odwrócenie trwa dłużej niż kilka sekund — przerwij. Jeśli da się rozpoznać albo odwrócenie jest chwilowe — zostaw.
+
+### Procedura — jak przerwać zamazanie dokładnie w momencie odwrócenia
+
+#### Wariant A — najprostszy: PAUSE (gdy odwrócenie jest na stałe)
+
+1. Zatrzymaj odtwarzanie (**⏹ STOP**).
+2. Przyciskami `+1` / `-1` (albo suwakiem) znajdź **ostatnią klatkę, na której twarz jest jeszcze rozpoznawalna** (np. ostatni profil, ostatnie półprofil).
+3. Przejdź **o 1 klatkę dalej** — na pierwszą klatkę, na której twarz jest już odwrócona i nie chcesz jej zamazywać.
+4. Kliknij **⏸ PAUSE**.
+5. Sprawdź:
+   - na bieżącej klatce zamazanie tej twarzy zniknęło,
+   - na poprzedniej klatce zamazanie jeszcze jest,
+   - w liście po prawej segment tej twarzy ma ustawiony koniec (np. `[120-245]` zamiast `[120-...]`).
+6. Przewiń dalej i sprawdź, czy zamazanie nie wraca w kolejnych klatkach.
+
+> **Ważne:** PAUSE kończy **wszystkie** aktywne trackery, nie tylko jedną twarz. Jeśli w kadrze są 2 osoby i tylko jedna się odwróciła, a druga nadal powinna być zamazana, **nie** używaj PAUSE dla wszystkich. Użyj Wariantu B.
+
+#### Wariant B — precyzyjny: usuń / zakończ tylko tę jedną twarz
+
+Gdy w kadrze jest więcej osób albo chcesz zakończyć tylko jeden segment:
+
+1. Zatrzymaj odtwarzanie.
+2. Znajdź klatkę, od której nie chcesz już zamazywać tej twarzy (jak w Wariancie A, krok 2–3).
+3. **Opcja 1 — usunięcie całego segmentu:** w liście po prawej kliknij **X** przy segmencie tej twarzy. Uwaga: to usuwa **cały** segment od jego początku, nie tylko od bieżącej klatki. Używaj, gdy cały segment był błędny albo gdy twarz była odwrócona od samego początku segmentu.
+4. **Opcja 2 — zakończenie segmentu w tym miejscu bez usuwania początku:** kliknij **⏸ PAUSE** tylko wtedy, gdy to jedyna aktywna twarz. Jeśli jest więcej twarzy, zamiast tego:
+   - kliknij prawym przyciskiem na zamazanie tej twarzy (usuwa cały segment tej twarzy od początku — jak Opcja 1), **albo**
+   - zostaw segment, ale po eksporcie sprawdź, czy nie trzeba go podzielić — w praktyce najczystsze jest: usuń ten segment (**X**) i dodaj go od nowa tylko na przedziale, gdzie twarz jest widoczna przodem (od klatki startowej do klatki odwrócenia), a potem go nie kontynuuj.
+
+W praktyce większość użytkowników robi tak:
+
+- **Jedna osoba w kadrze → PAUSE** w momencie odwrócenia.
+- **Wiele osób w kadrze → X na liście** dla tej jednej twarzy + ponowne dodanie jej tylko na przedziale, gdzie ma być zamazana.
+
+#### Wariant C — twarz odwraca się na chwilę i wraca przodem: PAUSE → RESUME
+
+Gdy odwrócenie trwa tylko chwilę (np. osoba odwraca się, żeby coś podać, i wraca):
+
+1. Na pierwszej klatce odwrócenia kliknij **⏸ PAUSE**.
+2. Przewiń do klatki, na której twarz znowu jest widoczna przodem / profilem.
+3. Kliknij **▶ RESUME**.
+4. Program utworzy nowy segment dla tej twarzy od bieżącej klatki.
+5. Sprawdź klatka po klatce, czy nowy segment leży dobrze na twarzy. Jeśli nie — popraw go, przeciągając środek / krawędzie (program podzieli segment, patrz: sekcja o poprawianiu trackera).
+
+> **Pułapka RESUME:** RESUME wznawia **wszystkie** zakończone trackery. Jeśli wstrzymałeś 2 twarze, a chcesz wznowić tylko jedną, RESUME wznowi obie. Wtedy drugą usuń ręcznie (**X** / prawy przycisk) albo nie używaj RESUME, tylko dodaj tę jedną twarz od nowa kliknięciem w zieloną ramkę.
+
+#### Wariant D — twarz odwraca się, ale tracker i tak „ciągnie” zamazanie dalej: wymuś zakończenie
+
+Jeśli po PAUSE zamazanie nadal wraca w kolejnych klatkach (bo tracker został ponownie zakotwiczony przez AI albo bo segment nie został zakończony):
+
+1. Sprawdź listę: czy segment tej twarzy ma koniec (`[start-koniec]`), czy jest otwarty (`[start-...]`)?
+2. Jeśli jest otwarty — usuń go (**X**) i dodaj od nowa tylko na przedziale, gdzie twarz ma być zamazana.
+3. Sprawdź, czy **Stop gdy zgubi** jest zaznaczone. Jeśli nie, zaznacz je — przy odwróceniu i gwałtownym ruchu tracker szybciej się podda zamiast „wisieć” na potylicy.
+4. Zmniejsz **Tolerancję skoku** (np. do 70–100), jeśli tracker po odwróceniu przeskakuje na tło.
+5. Przewiń cały fragment odwrócenia klatka po klatce i upewnij się, że po klatce odwrócenia nie ma już zamazania tej twarzy.
+
+### Jak sprawdzić po naprawie, czy odwrócenie jest dobrze obsłużone
+
+1. Znajdź klatkę odwrócenia.
+2. Klatka przed: zamazanie jest (jeśli twarz była jeszcze rozpoznawalna).
+3. Klatka odwrócenia: zamazania nie ma (jeśli zdecydowałeś przerwać) albo jest (jeśli zdecydowałeś zostawić — świadomie).
+4. 5–10 klatek dalej: stan taki sam jak w punkcie 3 — zamazanie nie „wraca samo”.
+5. Lista po prawej: segment ma poprawny koniec albo jest nowy segment od momentu powrotu twarzy.
+6. Zrzut ekranu na klatce odwrócenia (z blur) — obejrzyj go na pełnym ekranie, zanim wyeksportujesz.
+
+### Czego NIE robić przy odwróconej twarzy
+
+- **Nie** zostawiaj zamazania „bo program sam tak zrobił”. Program nie podejmuje decyzji o prywatności — Ty ją podejmujesz.
+- **Nie** klikaj RESUME „żeby zobaczyć, co się stanie”, jeśli odwrócenie jest na stałe — RESUME przywróci zamazywanie.
+- **Nie** usuwaj całego filmu / wszystkich trackerów (**Wyczyść**) tylko dlatego, że jedna twarz się odwróciła — usuń / zakończ tylko ten jeden segment.
+- **Nie** licz na to, że tracker sam zgubi odwróconą głowę. Tył głowy jest dla CSRT często wystarczająco podobny do przodu, żeby tracker trwał dalej przez długi czas.
+
+---
+
+## Dobre praktyki — kolejność pracy, która oszczędza poprawki
+
+1. **Najpierw obejrzyj film raz bez zamazywania.** Zaznacz w głowie, kogo trzeba zamazać, a kogo nie.
+2. **Potem dodawaj zamazania.** Ręcznie (AUTO / MANUAL) dla dokładności albo skanowaniem AI jako punktem startowym.
+3. **Potem kontrola:** lista po prawej (`IDŹ` przy każdym wpisie) + przewinięcie całego filmu na przyspieszeniu + klatka po klatce w trudnych miejscach.
+4. **Potem poprawki:** usuń fałszywe (Problem 1), skróć odwrócone (Problem 2), popraw pozycję / rozmiar.
+5. **Potem parametry:** Rozmycie, Wtapianie, kształt (CIRCLE / PIXEL / BLACKBOX).
+6. **Dopiero potem eksport.** Eksport to ostatni krok, nie pierwszy.
+
+---
+
+## Rozwiązywanie problemów
+
+| Objaw | Najczęstsza przyczyna | Co zrobić |
+| --- | --- | --- |
+| Brak zielonych ramek, mimo że twarze widać | Zły model, brak pliku `.onnx`, za małe / za ciemne twarze | Zmień model, wskaż plik `.onnx` przyciskiem **Wskaż...**, przybliż zoom, dodaj twarz ręcznie (MANUAL). |
+| Zamazanie „skacze” na inną osobę / tło | Za wysoka Tolerancja skoku, szybki ruch, zasłonięcie | Zmniejsz Tolerancję skoku, włącz **Stop gdy zgubi**, dodaj tracker od nowa od dobrej klatki. |
+| Zamazanie znika w połowie ruchu | Za niska Tolerancja skoku albo tracker zgubił twarz | Zwiększ Tolerancję skoku, dodaj tracker od nowa, sprawdź, czy twarz nie wyszła poza kadr. |
+| Zamazanie wisi tam, gdzie twarzy już nie ma | Odznaczony **Stop gdy zgubi** albo tracker nie zakończony | Zaznacz **Stop gdy zgubi**, zakończ segment (PAUSE / X), usuń zły tracker. |
+| Po eksporcie nie ma dźwięku | Brak `ffmpeg.exe` | Włóż `ffmpeg.exe` do folderu programu i wyeksportuj ponownie. |
+| Eksportuje się cały film, mimo że zaznaczyłeś fragment | Znaczniki nie zostały zamknięte (kliknąłeś tylko **OD**) | Kliknij **Eksport DO** na klatce końcowej. Fragment pojawia się na pasku znaczników jako zielony prostokąt. |
+| Program pokazuje `PAUZA ŚLEDZENIA – BRAK ROZMYCIA`, a Ty chcesz zamazywać | Śledzenie wstrzymane przyciskiem PAUSE | Kliknij **RESUME** albo dodaj twarz od nowa (klik / przeciągnięcie). |
+| Po kliknięciu zielonej ramki nic się nie dzieje | Klik poza ramką (za duży margines) albo brak wczytanej klatki | Kliknij dokładnie w środek zielonej ramki, sprawdź, czy klatka jest wczytana. |
+| Wielokąt LINE nie chce się zamknąć | Za mało punktów albo podwójne kliknięcie poza obrazem | Narysuj min. 3 punkty, zamknij podwójnym kliknięciem na obrazie, nie na czarnym pasku. |
+| Wideo się nie otwiera | Nieobsługiwany kodek / uszkodzony plik | Spróbuj przekonwertować wideo na `.mp4` (H.264) zewnętrznym konwerterem. |
+
+---
+
+## Plik `settings.json`
+
+Program zapisuje przy zamykaniu (i wczytuje przy starcie) tylko trzy ustawienia:
 
 ```json
 {
@@ -714,273 +1107,28 @@ Przy zamykaniu programu zapisywany jest plik `settings.json` w katalogu programu
 }
 ```
 
-Przy następnym uruchomieniu program wczytuje te wartości i ustawia suwaki. Pozostałe ustawienia (model, kształt, prędkość, checkboxy) nie są zapisywane i wracają do domyślnych.
+- `blur_strength` = suwak **Rozmycie**,
+- `feathering` = suwak **Wtapianie**,
+- `jump_tolerance` = suwak **Tolerancja skoku**.
+
+Pozostałe ustawienia (model, kształt, prędkość, znaczniki, trackery) nie są zapisywane — są odtwarzane przy każdym uruchomieniu od wartości domyślnych.
 
 ---
 
-## Skróty klawiszowe
+## Ograniczenia
 
-| Klawisz | Działanie |
-| --- | --- |
-| Strzałka w lewo | Klatka -1 |
-| Strzałka w prawo | Klatka +1 |
-| Shift + strzałka w lewo | Klatka -10 |
-| Shift + strzałka w prawo | Klatka +10 |
-| Strzałka w górę | Klatka +30 |
-| Strzałka w dół | Klatka -30 |
-| Delete | Cofnij - usuwa ostatni tracker |
-
-Myszka:
-
-| Akcja | Działanie |
-| --- | --- |
-| Lewy klik | AUTO - dodaj twarz z detekcji |
-| Lewy przeciągnij | MANUAL - narysuj ramkę |
-| Lewy na środku ramki + przeciągnij | Przesuń ramkę |
-| Lewy na krawędzi / narożniku + przeciągnij | Zmień rozmiar ramki |
-| Scroll | Zoom 1.0x - 12.0x |
-| Prawy klik na ramce | Usuń ten tracker |
-| Prawy przeciągnij przy zoomie | Pan - przesuń widok |
-| Shift + lewy przeciągnij | Pan - przesuń widok |
-| Podwójny lewy klik w trybie LINE | Zamknij wielokąt |
-| Prawy klik w trybie LINE | Anuluj rysowany wielokąt |
+- Program nie rozpoznaje tożsamości ani nie odróżnia „twarzy z przodu” od „twarzy z tyłu” — decyzja o zakończeniu zamazania należy do użytkownika.
+- Śledzenie CSRT działa najlepiej przy stabilnej kamerze i umiarkowanym ruchu. Gwałtowne cięcia, szybkie panoramy i częste zasłanianie twarzy wymagają ręcznych poprawek.
+- Detekcja AI nie działa na każdej klatce odtwarzania — tylko przy zatrzymaniu / skoku / odświeżeniu. To celowy kompromis na rzecz płynności podglądu.
+- Eksport zawsze używa ustawień z momentu kliknięcia **Eksportuj / Zapisz**. Nie ma osobnych ustawień zamazania dla różnych fragmentów filmu.
+- Bez `ffmpeg.exe` eksport wideo jest bez dźwięku.
 
 ---
 
-## WAŻNE: Niepotrzebne zamazane obszary w losowych miejscach
-
-To jest najczęstszy problem po automatycznym skanowaniu całego filmu. Objaw: na filmie pojawia się zamazana plama na ścianie, na ubraniu, na dłoni, na plakacie, na telewizorze, na odbiciu w lustrze, na drugiej osobie, która nie miała być zamazana, albo plama „wisi" w miejscu, gdzie twarz już dawno zniknęła.
-
-### Dlaczego tak się dzieje
-
-Masz do czynienia z jedną z czterech przyczyn. Diagnoza decyduje o naprawie.
-
-**Przyczyna 1: Fałszywa detekcja AI.**
-Model uznał, że coś jest twarzą, choć nią nie jest. Plakat, zdjęcie na ścianie, manekin, pies, wzór na koszulce, dłoń, cień. Jeśli kliknąłeś „Zamaż wszystkie zielone" albo „Zamaż cały film (AI)", program dodał tracker dla tej fałszywej detekcji.
-
-Jak poznać: na klatce startowej segmentu widać zieloną ramkę w miejscu, gdzie nie ma prawdziwej twarzy.
-
-**Przyczyna 2: Przeskok trackera na inny obiekt.**
-CSRT podążał za twarzą, ale twarz szybko się ruszyła, kamera drgnęła albo ktoś przeszedł przed kamerą. Tracker „przeskoczył" na podobny wzorzec obok: inną twarz, rękę, fragment ubrania. Od tego momentu zamazuje już nie to, co trzeba.
-
-Jak poznać: początek segmentu jest dobry, twarz jest zamazana prawidłowo, a w pewnym momencie zamazanie nagle „skacze" w inne miejsce i tam zostaje.
-
-**Przyczyna 3: Tracker nie został zatrzymany, gdy twarz zniknęła.**
-Jeśli **Stop gdy zgubi** jest odznaczony albo Tolerancja skoku jest za wysoka, tracker trzyma się ostatniej pozycji i dalej zamazuje to samo miejsce, nawet gdy osoba wyszła z kadru. Zamazanie wisi w powietrzu.
-
-Jak poznać: zamazanie stoi w miejscu, a osoba już wyszła albo schowała się za kimś.
-
-**Przyczyna 4: Zła trajektoria po skoku na osi czasu.**
-Gdy przeciągasz suwak czasu o wiele klatek, program robi ponowną detekcję i szuka twarzy w pobliżu ostatniej pozycji. Jeśli w pobliżu jest inna twarz albo obiekt podobny do twarzy, może złapać zły obiekt i od tego miejsca prowadzić błędną trajektorię.
-
-Jak poznać: błąd zaczyna się dokładnie w miejscu, do którego przeskoczyłeś suwakiem.
-
-### Procedura naprawy - krok po kroku
-
-Nie używaj **Wyczyść**, bo stracisz też dobre zamazania. Naprawiaj tylko błędny segment.
-
-**Krok 1: Zatrzymaj odtwarzanie.**
-Kliknij **STOP**, jeśli film gra. Błędy naprawia się na zatrzymanym filmie, klatka po klatce.
-
-**Krok 2: Znajdź pierwszą błędną klatkę.**
-Używaj przycisków `+1`, `-1`, `+10`, `-10` albo suwaka czasu, żeby znaleźć dokładną klatkę, od której zamazanie jest już złe. Zapisz sobie ten numer klatki. To jest punkt cięcia.
-
-**Krok 3: Zidentyfikuj, który to tracker.**
-Spójrz na panel prawy. Segment aktywny na bieżącej klatce jest podświetlony na zielono. Jego napis to np. `Twarz 3 [ID7] (A) [100-...]`. To jest podejrzany.
-
-Możesz też kliknąć **IDŹ** przy każdym segmencie, żeby zobaczyć, gdzie się zaczyna. Błędny segment często zaczyna się dokładnie tam, gdzie jest fałszywa detekcja.
-
-**Krok 4: Wybierz jeden z trzech wariantów naprawy.**
-
-**Wariant A: Cały segment jest błędny od początku do końca.**
-Przykład: zamazanie od początku jest na plakacie, a nie na twarzy.
-- Na liście po prawej kliknij **X** przy tym segmencie.
-- Sprawdź, czy po usunięciu nie zniknęło też dobre zamazanie. Jeśli to był jedyny segment tej twarzy, nic więcej się nie stanie.
-- Jeśli po usunięciu chcesz dodać prawidłową twarz, stań na klatce startowej i kliknij ją albo narysuj ramkę.
-
-**Wariant B: Początek jest dobry, a od pewnej klatki zamazanie jest złe.**
-To jest najczęstszy przypadek przeskoku trackera. Nie usuwaj całego segmentu, bo stracisz dobry początek.
-- Stań na pierwszej złej klatce.
-- Kliknij **PAUSE**. To ucina wszystkie aktywne segmenty na klatce poprzedniej.
-- Jeśli masz tylko jedną twarz, to wystarczy. Dobry początek zostaje, a zła końcówka znika.
-- Jeśli masz kilka twarzy i PAUSE ucięło też dobre twarze, to dla każdej dobrej twarzy stań na tej samej klatce i kliknij **RESUME** albo dodaj ją od nowa kliknięciem. Dobre twarze wrócą, a błędna nie, bo jej nie wznowisz.
-- Dokładniejsza metoda dla wielu twarzy jest w Wariancie C.
-
-**Wariant C: Masz kilka twarzy i tylko jedna jest błędna, a reszta jest dobra. Nie chcesz używać PAUSE, bo tnie wszystko.**
-- Stań na pierwszej złej klatce.
-- Najedź na środek błędnej ramki i lekko ją przesuń albo zmień jej rozmiar (nawet o 1 piksel). Program podzieli ten tracker: stary segment kończy się na klatce przed bieżącą, a od bieżącej zaczyna się nowy segment.
-- Teraz na liście po prawej masz dwa segmenty tej samej twarzy: dobry stary i zły nowy. Kliknij **X** przy nowym, złym segmencie.
-- Dobry początek zostaje. Dobre twarze nie zostały ruszone. Zła końcówka znika.
-- Jeśli błędna ramka po przeskoku jest daleko od prawdziwej twarzy, to przesunięcie jej z powrotem na twarz też jest naprawą. Zamiast usuwać ogon, możesz przesunąć ramkę na właściwą twarz. Program od tej klatki będzie śledził już dobrą twarz.
-
-**Krok 5: Sprawdź, czy nie ma drugiego błędnego segmentu tej samej fałszywej twarzy.**
-Po skanowaniu AI fałszywa twarz może mieć kilka segmentów, bo znikała i wracała. Przejrzyj listę. Jeśli widzisz kilka segmentów o tym samym numerze twarzy, które zaczynają się w tym samym miejscu (np. ten sam plakat), usuń każdy z nich przyciskiem **X**.
-
-**Krok 6: Zapobiegaj powtórce.**
-- Zmniejsz **Tolerancja skoku** z 130 na 80-100, jeśli film jest statyczny. Tracker będzie mniej skakał.
-- Sprawdź, czy **Stop gdy zgubi** jest zaznaczony. Ma być zaznaczony.
-- Jeśli problem się powtarza w tym samym miejscu, zmień model na inny (np. z YuNet na SCRFD 2.5G albo YOLO-Face) i sprawdź tę samą klatkę. Jeśli nowy model nie widzi tam twarzy, to była fałszywa detekcja.
-- Nie używaj „Zamaż cały film (AI)" bez późniejszej kontroli. To jest narzędzie do wstępnego zamazania, a nie do gotowego eksportu.
-
-**Krok 7: Sprawdź naprawę przed eksportem.**
-Odtwórz film od klatki przed cięciem do klatki po cięciu. Sprawdź, czy:
-- Dobre zamazanie nadal jest.
-- Błędne zamazanie zniknęło i nie wraca dalej.
-- Nie ma nowej plamy w innym miejscu.
-
-Dopiero wtedy eksportuj.
-
-### Czego NIE robić przy losowych zamazaniach
-
-- Nie klikaj **Wyczyść**, bo stracisz całą pracę.
-- Nie klikaj **Cofnij** w ciemno, bo usunie ostatni tracker, a niekoniecznie ten błędny. Błędny może być w środku listy.
-- Nie próbuj „zakryć" błędu rysowaniem drugiej ramki na tym samym miejscu. Dostaniesz dwa zamazania na siebie i chaos w segmentach.
-- Nie eksportuj z nadzieją, że „na eksporcie będzie dobrze". Eksport liczy to samo, co podgląd. Jeśli w podglądzie jest plama, na eksporcie też będzie.
-
----
-
-## WAŻNE: Twarz nadal śledzona, ale już odwrócona
-
-Objaw: osoba odwraca się tyłem, pokazuje tył głowy, kark, plecy, a zamazanie nadal za nią chodzi. Albo osoba odwraca głowę w profil, twarzy już nie widać, ale zamazanie nadal jest. Czasem to jest w porządku, czasem nie ma już potrzeby zamazywać.
-
-### Dlaczego program to robi
-
-Tracker CSRT nie rozpoznaje twarzy. On śledzi wzorzec pikseli. Tył głowy, włosy, kark, czapka - dla niego to nadal ten sam obiekt, który śledził. Program nie wie, że twarz się odwróciła. Nie ma funkcji „przestań, gdy nie widać twarzy".
-
-Detektor AI też czasem wykrywa twarz z profilu albo z tyłu, jeśli widzi fragment ucha, żuchwy albo kształt głowy. Dlatego sama zmiana modelu nie rozwiąże tego problemu.
-
-Decyzja, czy zamazywać odwróconą głowę, jest Twoja i zależy od celu:
-
-- **Zamazuj dalej, jeśli:** tył głowy nadal pozwala rozpoznać osobę (charakterystyczna fryzura, tatuaż na karku, ubranie, sylwetka w kontekście) albo jeśli osoba zaraz się odwróci z powrotem i nie chcesz przerwy w zamazywaniu.
-- **Przestań zamazywać, jeśli:** twarzy już nie widać, tył głowy jest nierozpoznawalny, a zamazanie tyłu głowy wygląda dziwnie i zwraca uwagę. Wtedy przerwa w zamazywaniu jest naturalna i mniej rzuca się w oczy niż pływająca plama na plecach.
-
-### Procedura - jedna twarz na filmie
-
-To jest najprostszy przypadek.
-
-**Krok 1: Znajdź dokładną klatkę odwrócenia.**
-Zatrzymaj film. Cofaj się klatka po klatce przyciskami `-1` i `+1`, aż znajdziesz pierwszą klatkę, na której twarzy już nie widać, a widać tylko tył głowy. To jest klatka, od której nie chcesz już zamazywać.
-
-Przykład: twarz widać do klatki 350. Na klatce 351 widać już tylko tył głowy. To klatka 351 jest pierwszą klatką bez twarzy.
-
-**Krok 2: Stań na pierwszej klatce bez twarzy i kliknij PAUSE.**
-PAUSE ustawia koniec segmentu na `bieżąca klatka - 1`. Czyli zamazanie kończy się na klatce 350, a od 351 już go nie ma. Wcześniejsze zamazanie zostaje.
-
-Wskaźnik zmieni się na **PAUZA ŚLEDZENIA**.
-
-**Krok 3: Sprawdź przerwę.**
-Przewiń od klatki 345 do 360. Powinno być tak:
-- 345-350: zamazanie jest.
-- 351 i dalej: zamazania nie ma, widać tył głowy bez plamy.
-
-Jeśli zamazanie znika za wcześnie albo za późno o 1-2 klatki, cofnij się o te klatki i popraw. Możesz użyć **Cofnij**? Nie, bo Cofnij usuwa cały ostatni tracker. Zamiast tego:
-- Jeśli uciąłeś za wcześnie, usuń ogon? W tym przypadku nie ma ogona. Musisz dodać nowy segment od klatki, gdzie twarz jeszcze była, i uciąć go w dobrym miejscu. Prościej: stań na klatce 350, kliknij twarz od nowa (stworzy nowy segment od 350), a potem stań na 351 i kliknij PAUSE. To naprawi cięcie o jedną klatkę.
-
-**Krok 4: Gdy osoba odwróci się z powrotem, wznów.**
-Gdy osoba znowu pokazuje twarz, stań na pierwszej klatce, gdzie twarz znowu jest dobrze widoczna. Kliknij **RESUME**. Program utworzy nowy segment od tej klatki. Przerwa między PAUSE a RESUME zostaje niezamazana.
-
-Nie klikaj RESUME na klatce, gdzie widać jeszcze tył głowy. Poczekaj na klatkę z twarzą. Inaczej nowy segment zacznie się od tyłu głowy i znowu będziesz miał ten sam problem.
-
-**Krok 5: Sprawdź na odtwarzaniu.**
-Odtwórz fragment od 5 klatek przed pauzą do 5 klatek po wznowieniu. Zamazanie powinno znikać i pojawiać się naturalnie, bez skoków.
-
-### Procedura - kilka twarzy, tylko jedna się odwróciła
-
-PAUSE tnie wszystkie twarze naraz, więc nie używaj go tutaj. Użyj metody podziału i usunięcia ogona.
-
-**Krok 1: Znajdź pierwszą klatkę bez twarzy dla tej jednej osoby.** Tak samo jak wyżej, klatka po klatce.
-
-**Krok 2: Podziel tylko ten tracker.**
-Stań na pierwszej klatce bez twarzy. Najedź na środek ramki tej jednej odwróconej osoby i lekko ją przesuń (nawet o 1 piksel) albo zmień jej rozmiar. Program podzieli tylko ten tracker:
-- Stary segment: od startu do klatki przed bieżącą. Zostaje zamazany prawidłowo.
-- Nowy segment: od bieżącej klatki w przód. To jest ogon, który zamazuje tył głowy.
-
-Inne twarze nie zostały ruszone.
-
-**Krok 3: Usuń tylko ogon.**
-Na liście po prawej znajdź nowy segment tej twarzy. Będzie miał ten sam numer twarzy, ale nowe ID i start równy bieżącej klatce, np. `Twarz 2 [ID8] (A) [351-...]`. Kliknij przy nim **X**.
-
-Stary segment zostaje. Inne twarze zostają. Ogon z tyłem głowy znika.
-
-**Krok 4: Gdy ta osoba odwróci się z powrotem, dodaj ją od nowa.**
-Stań na klatce, gdzie jej twarz znowu jest widoczna. Kliknij tę twarz (AUTO) albo narysuj ramkę (MANUAL). Powstanie nowy segment. Program nada mu ten sam numer twarzy, jeśli rozpozna, że to ta sama okolica, albo nowy numer, jeśli nie. To nie ma znaczenia dla eksportu. Ważne, że zamazanie wraca dopiero od tej klatki.
-
-Nie używaj RESUME w tym wariancie, bo RESUME wznowi też inne segmenty, które wcześniej uciąłeś.
-
-### Procedura - osoba odwraca się, ale za chwilę wraca, a Ty chcesz ciągłości
-
-Jeśli osoba odwraca się tylko na 5-10 klatek i zaraz wraca, czasem lepiej zostawić zamazanie na tył głowy, żeby nie było migotania: zamazanie znika na chwilę i wraca. Migotanie bardziej zwraca uwagę niż ciągłe zamazanie.
-
-W takim przypadku nic nie rób. Zostaw tracker. Dopiero gdy odwrócenie trwa dłużej (np. powyżej 0.5 sekundy, czyli powyżej 12-15 klatek przy 25 FPS), warto robić przerwę.
-
-### Procedura - osoba odwraca się na stałe i już nie wraca
-
-- Utnij segment metodą PAUSE (jedna twarz) albo podział + X (wiele twarzy).
-- Nie musisz nic więcej robić. Segment po prostu się kończy.
-- Sprawdź na liście, czy segment ma koniec, np. `[100-350]`, a nie `[100-...]`. Trzy kropki oznaczają, że segment nadal trwa i będzie zamazywał dalej. Jeśli widzisz trzy kropki, to znaczy, że nie uciąłeś.
-
-### Czego NIE robić przy odwróconej twarzy
-
-- Nie usuwaj całego trackera prawym przyciskiem myszy ani przyciskiem **X** przy starym segmencie, bo usuniesz też dobry początek, gdzie twarz była widoczna.
-- Nie używaj **Wyczyść**, bo usuniesz wszystkie twarze.
-- Nie licz na to, że program sam przestanie, gdy twarz się odwróci. On nie przestanie. Musisz mu powiedzieć, gdzie uciąć.
-- Nie klikaj RESUME na klatce z tyłem głowy. RESUME ma być na klatce z twarzą.
-
----
-
-## Kontrola przed eksportem - checklista
-
-Zrób to zawsze, zanim klikniesz **Eksportuj / Zapisz**:
-
-1. Obejrzyj cały film od początku do końca na podglądzie, przynajmniej na przyspieszeniu. Nie ufaj, że skanowanie AI było idealne.
-2. Sprawdź listę po prawej. Czy nie ma segmentów, które zaczynają się w losowym miejscu? Kliknij **IDŹ** przy podejrzanych.
-3. Sprawdź, czy każdy segment ma koniec tam, gdzie powinien. Segment, który ma `...` na końcu, zamazuje do końca filmu. Czy na pewno ma zamazywać do końca?
-4. Sprawdź odwrócenia głowy. Czy po każdym odwróceniu jest przerwa, jeśli tego chciałeś?
-5. Sprawdź suwaki: Rozmycie, Wtapianie, Tolerancja skoku. Czy to są wartości, które chcesz na eksporcie?
-6. Sprawdź kształt: CIRCLE / BLACKBOX / PIXEL / LINE. Czy na eksporcie ma być ten sam kształt co na podglądzie?
-7. Sprawdź znaczniki eksportu. Czy na pasku znaczników nie ma przypadkowego fragmentu? Jeśli nie chcesz wycinać fragmentów, lista znaczników ma być pusta, a pasek ma nie mieć zielonych prostokątów.
-8. Sprawdź, czy **Stop gdy zgubi** jest zaznaczony, jeśli chcesz, żeby eksport też przestawał przy zgubieniu.
-9. Zrób jeden zrzut ekranu z zamazaniem na trudnej klatce i obejrzyj go na pełnym ekranie. Czy twarzy na pewno nie da się rozpoznać?
-10. Dopiero wtedy eksportuj.
-
-Po eksporcie obejrzyj wyeksportowany plik, przynajmniej fragmenty, gdzie były problemy. Eksport liczy śledzenie od nowa, więc w rzadkich przypadkach może się różnić od podglądu o 1-2 klatki.
-
----
-
-## Rozwiązywanie problemów
-
-| Objaw | Najczęstsza przyczyna | Co zrobić |
-| --- | --- | --- |
-| Zamazanie „skacze" na inną osobę | Tolerancja skoku za wysoka, szybki ruch | Zmniejsz Tolerancję skoku, utnij błędny ogon, dodaj twarz od nowa |
-| Zamazanie wisi w miejscu, gdzie nikogo nie ma | Stop gdy zgubi odznaczony | Zaznacz Stop gdy zgubi, utnij segment na klatce, gdzie twarz zniknęła |
-| Detektor znajduje twarze na plakacie, telewizorze, lustrze | Fałszywa detekcja | Usuń ten segment przyciskiem X, zmień model, nie używaj „Zamaż wszystkie zielone" na tej klatce |
-| Twarz z profilu nie jest wykrywana | Model nie widzi profilu | Użyj MANUAL (przeciągnij ramkę) albo zmień model na SCRFD 2.5G / YOLO-Face |
-| Zamazanie znika po kilku klatkach | Tracker zgubił twarz, Stop gdy zgubi kończy segment | Stań na klatce, gdzie twarz wraca, dodaj ją od nowa albo kliknij RESUME |
-| Po PAUSE nic się nie zamazuje | PAUSE ucięło wszystko | Kliknij RESUME na klatce z twarzą albo dodaj twarze od nowa |
-| Po RESUME zamazuje tył głowy | RESUME kliknięte za wcześnie | Usuń ten nowy segment, stań na klatce z twarzą, kliknij RESUME jeszcze raz |
-| Eksport nie ma dźwięku | Brak ffmpeg.exe | Wgraj ffmpeg.exe do katalogu programu, wyeksportuj jeszcze raz |
-| Program nie widzi modelu | Brak pliku .onnx | Kliknij Wskaż... i wskaż plik .onnx albo wgraj plik do katalogu programu |
-| Zielone ramki są, ale nie ma zamazania | Nie kliknąłeś twarzy | Zielona ramka to tylko propozycja. Kliknij ją, żeby dodać tracker, albo kliknij „Zamaż wszystkie zielone" |
-| Ramka jest za mała albo za duża | Detekcja niedokładna | Najedź na krawędź i zmień rozmiar, albo narysuj ramkę MANUAL od nowa |
-| Wtapianie robi „ducha" wokół twarzy | Wtapianie za wysokie | Zmniejsz Wtapianie do 10-20 |
-| Rozmycie za słabe, widać oczy | Rozmycie za niskie | Podnieś Rozmycie do 70-90 albo włącz PIXEL / BLACKBOX |
-
----
-
-## Uwagi końcowe
-
-Program jest narzędziem do pomocy, a nie do w pełni automatycznej anonimizacji. Automatyczne skanowanie zawsze wymaga ręcznej kontroli. Najlepsza jakość to: automatyczne wykrywanie jako punkt startowy, ręczne poprawki w miejscach błędów, kontrola przed eksportem.
-
-Jeśli nagrywasz w trudnych warunkach (szybki ruch, dużo osób, słabe światło), pracuj małymi odcinkami: zamazuj 10-20 sekund, sprawdzaj, poprawiaj, dopiero potem idź dalej. To jest szybsze niż naprawianie godzinnego filmu po jednym skanowaniu.
-
----
-
-## Licencja i autor
-
-Autor: marek7400 - https://github.com/marek7400
-
-Program do użytku własnego. Używaj go zgodnie z prawem. Zamazywanie twarzy nie zwalnia z obowiązku uzyskania zgody na publikację, jeśli taka zgoda jest wymagana.
-
-
-
-
+## Pliki w repozytorium
+
+- `face_blur_v37_multi_model.py` — główny program.
+- `README.md` — ten plik.
+- `ffmpeg.exe` — do doklejenia dźwięku (do pobrania osobno, patrz: Wymagania).
+- `*.onnx` — pliki modeli AI (do pobrania / włożenia osobno, patrz: Pliki modeli AI).
+- `settings.json` — tworzony automatycznie, przechowuje 3 ustawienia suwaków.
