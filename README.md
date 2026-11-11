@@ -1,4 +1,5 @@
-<img width="1920" height="1159" alt="python" src="https://github.com/user-attachments/assets/f6f72cac-046a-4c0e-8bd5-4dad7d93c150" />
+<img width="1918" height="1154" alt="FacelBlur_v1 37" src="https://github.com/user-attachments/assets/2e8a6614-1464-4d5b-a694-e723dd27b551" />
+
 
 # Face Blur Tool
 
