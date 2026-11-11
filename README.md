@@ -2,7 +2,7 @@
 #  FaceBlur (Multi-Face Tracking & Anonymizer)
 
 [![GitHub](https://img.shields.io/badge/GitHub-marek7400-blue?style=flat&logo=github)](https://github.com/marek7400?tab=repositories)
-[![Release](https://img.shields.io/badge/Wersja-1.36-success?style=flat)](https://github.com/marek7400)
+[![Release](https://img.shields.io/badge/Wersja-1.37-success?style=flat)](https://github.com/marek7400)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?style=flat&logo=windows)](https://github.com/marek7400)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-brightgreen?style=flat&logo=python)](https://www.python.org/)
 [![OpenCV](https://img.shields.io/badge/OpenCV-DNN%20%7C%20CSRT-orange?style=flat&logo=opencv)](https://opencv.org/)
