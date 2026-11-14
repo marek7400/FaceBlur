@@ -1,3 +1,8 @@
+(In progress english version) W przygotowaniu wersja 2.0 z zamazywaniem postaci+inne usprawnienia...
+
+<img width="1920" height="1160" alt="fb2 0" src="https://github.com/user-attachments/assets/2ac8720c-a53f-4324-bcc9-51bcf1f51679" />
+
+
 <img width="1918" height="1154" alt="FacelBlur_v1 37" src="https://github.com/user-attachments/assets/6c2844e6-459d-4ebf-a3c7-731095e93b4c" />
 
 
