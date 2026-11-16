@@ -1,4 +1,4 @@
-<img width="1920" height="1160" alt="fb" src="https://github.com/user-attachments/assets/caa863a4-dc48-45bd-a70e-2ae86f99a92e" />
+<img width="1920" height="1160" alt="pl" src="https://github.com/user-attachments/assets/97bd8f5f-1e31-4a34-9e91-d0736b61e117" />
 
 <BR> <BR>
 
@@ -53,7 +53,7 @@ Najważniejsze cechy:
 
 ## Szybki start
 
-1. Połóż obok programu folder `models` z plikami `.onnx` oraz plik `ffmpeg.exe` (dźwięk w eksporcie). Bez `ffmpeg.exe` program działa, ale eksportuje wideo bez dźwięku.
+1. Jeśli chcesz extra modele połóż obok programu folder `models` z plikami `.onnx`. Możesz też dać nowsze niż zaszyte w programie - pliki `ffmpeg.exe` i `ffprobe.exe`. 
 2. Uruchom program, kliknij **Wybierz wideo** albo **Wybierz zdjęcie**.
 3. Wybierz model na liście, np. **YOLO-Osoba (Seg)**, i kliknij **Zamaż wszystkie zielone**, albo kliknij pojedynczą zieloną ramkę, albo kliknij **Zamaż cały film (AI)**.
 4. Przejrzyj film klatka po klatce. Popraw to, co AI zgubiła: przeciągnij ramkę, domaluj maskę pędzlem, wytnij gumką, wznów segment.
@@ -70,7 +70,7 @@ Wystarczy katalog z programem. Obok pliku EXE powinny leżeć:
 | --- | --- | --- |
 | Plik EXE programu | Uruchomienie | Tak |
 | `models/` z plikami `.onnx` | Modele AI | Tak, przynajmniej jeden |
-| `ffmpeg.exe` (oraz opcjonalnie `ffprobe.exe`) | Dźwięk w eksporcie wideo | Nie, ale bez niego eksport jest bez dźwięku |
+| `ffmpeg.exe` (oraz `ffprobe.exe`) | Dźwięk w eksporcie wideo | Nie, ale bez niego eksport jest bez dźwięku |
 | `settings.json` | Zapisane ustawienia i własne modele | Nie, tworzy się przy zamknięciu |
 | `haarcascade_frontalface_default.xml` | Awaryjny model Haar Cascade | Nie |
 
@@ -189,6 +189,7 @@ Po pobraniu wrzuć plik `.onnx` do katalogu programu. Może to być katalog gł�
 FaceBlur/
   FaceBlur2.0.exe
   ffmpeg.exe
+  ffprobe.exe
   settings.json
   models/
     yolov11n-seg.onnx
@@ -485,8 +486,8 @@ Przycisk **Zrzut ekranu** zapisuje bieżącą klatkę do pliku JPG albo PNG.
 1. Program czyta film od początku klatka po klatce.
 2. Dla każdej klatki w zakresie eksportu (albo dla całego filmu, gdy nie ma zakresów) nakłada zamazanie dla aktywnych trackerów.
 3. Wideo jest zapisywane kodekiem `mp4v` do pliku tymczasowego o unikalnej nazwie (`._fb_tmp_*.mp4`).
-4. Jeśli jest `ffmpeg.exe`, program scala wideo z dźwiękiem ze źródła do pliku `._fb_ff_*.mp4`, a potem zamienia plik tymczasowy na docelowy. Pliki tymczasowe są usuwane.
-5. Jeśli nie ma `ffmpeg.exe`, program zapisuje samo wideo bez dźwięku i dodaje ostrzeżenie.
+4. Jeśli jest `ffmpeg.exe` i  `ffprobe.exe`, program scala wideo z dźwiękiem ze źródła do pliku `._fb_ff_*.mp4`, a potem zamienia plik tymczasowy na docelowy. Pliki tymczasowe są usuwane.
+5. Jeśli nie ma `ffmpeg.exe` i `ffprobe.exe`, program zapisuje samo wideo bez dźwięku i dodaje ostrzeżenie.
 
 Dźwięk:
 
@@ -560,7 +561,7 @@ Przeczytaj tę sekcję przed publikacją filmu z osobami, zwłaszcza z dziećmi.
 4. **Seg bez maski oznacza brak blur.** Program celowo nie wypełnia boxa, gdy nie ma obrysu. To lepsze niż czarny kwadrat, ale oznacza, że klatka może być bez zamazania. Sprawdź ostrzeżenia.
 5. **Brak pliku projektu.** Trackery i znaczniki nie są zapisywane. Zamknięcie programu albo otwarcie nowego pliku usuwa pracę. Eksportuj od razu po skończeniu.
 6. **Cofnij usuwa tylko ostatni tracker.** Nie ma pełnego stosu cofania dla edycji maski, przeciągnięć ani znaczników. Cofnięcie edycji maski to Reset maski na bieżącej klatce.
-7. **Brak dźwięku bez ffmpeg.exe.** Program zapisze wideo bez dźwięku i pokaże ostrzeżenie. Dźwięk wymaga `ffmpeg.exe` obok programu.
+7. **Brak dźwięku bez ffmpeg.exe i `ffprobe.exe`.** Program zapisze wideo bez dźwięku i pokaże ostrzeżenie. Dźwięk wymaga `ffmpeg.exe` i `ffprobe.exe` obok programu.
 8. **Wydajność.** Modele Seg, Dalekie (2x2) i wideo 4K są wyraźnie wolniejsze na CPU. Skanowanie całego filmu może trwać długo. Zmniejsz próg AI tylko wtedy, gdy naprawdę trzeba, bo niższy próg to więcej wykryć do przetworzenia.
 9. **Ścieżki z polskimi znakami.** Program próbuje zamienić ścieżkę na krótką ścieżkę 8.3 dla OpenCV na Windows. W większości przypadków działa, ale ścieżki z nietypowymi znakami, długie ścieżki i dyski sieciowe to nadal najczęstsze źródło błędów otwierania i zapisu.
 10. **Odczyt wideo może się skończyć przedwcześnie.** Uszkodzony plik, zmienna liczba klatek albo błąd kodeka mogą sprawić, że eksport zapisze mniej klatek niż deklaruje nagłówek. Program ostrzega o tym po eksporcie i pokazuje liczbę zapisanych klatek.
@@ -600,7 +601,7 @@ Przeczytaj tę sekcję przed publikacją filmu z osobami, zwłaszcza z dziećmi.
 
 **Eksport jest bez dźwięku.**
 
-- Połóż `ffmpeg.exe` obok programu i zrestartuj program. Przy starcie nie powinien pokazać się dialog o braku FFmpeg.
+- Połóż `ffmpeg.exe` i i `ffprobe.exe` obok programu i zrestartuj program. Przy starcie nie powinien pokazać się dialog o braku FFmpeg.
 - Sprawdź, czy źródło w ogóle ma dźwięk. Jeśli źródło nie ma ścieżki audio, eksport bez dźwięku jest poprawny.
 - Sprawdź ostrzeżenie po eksporcie. Jeśli scalanie audio się nie powiodło, program zapisuje wideo bez dźwięku i to zgłasza.
 
@@ -628,20 +629,21 @@ Typowy układ, który warto trzymać w repozytorium:
 
 ```text
 FaceBlur/
-  README.md
-  README_EN.md
+
   Face-Blur-V66-...py
-  faceblur2.0.jpg
   models/
     yolov11n-seg.onnx
     yolo26n-seg.onnx
   ffmpeg.exe
+  ffprobe.exe
   settings.json
 ```
 
 Plik `settings.json` jest tworzony przy zamknięciu programu. Nie musisz go dodawać ręcznie.
 
 ---
+
+<img width="1920" height="1162" alt="en" src="https://github.com/user-attachments/assets/d5e52729-ec36-49b3-9786-8b0b1891f16a" />
 
 # Face & Person Blur Tool
 
@@ -694,7 +696,7 @@ Main features:
 
 ## Quick start
 
-1. Put a `models` folder with `.onnx` files next to the program, plus `ffmpeg.exe` (for audio in exports). Without `ffmpeg.exe` the program works, but exports video without audio.
+1. If you want additional models, place a `models` folder containing `.onnx` files next to the program. You can also include newer versions of the `ffmpeg.exe` and `ffprobe.exe` files than those included with the program.
 2. Run the program and click **Choose video** or **Choose image**.
 3. Pick a model from the list, for example **YOLO-Person (Seg)**, and click **Blur all green**, or click a single green frame, or click **Blur whole video (AI)**.
 4. Go through the video frame by frame. Fix what the AI lost: drag the frame, paint the mask with the brush, cut with the eraser, resume the segment.
@@ -711,11 +713,11 @@ You only need the program folder. Next to the EXE file there should be:
 | --- | --- | --- |
 | Program EXE | Launching | Yes |
 | `models/` with `.onnx` files | AI models | Yes, at least one |
-| `ffmpeg.exe` (and optionally `ffprobe.exe`) | Audio in video exports | No, but without it exports have no audio |
+| `ffmpeg.exe` (and `ffprobe.exe`) | Audio in video exports | No, but without it exports have no audio |
 | `settings.json` | Saved settings and custom models | No, created on close |
 | `haarcascade_frontalface_default.xml` | Fallback Haar Cascade model | No |
 
-The program looks for `ffmpeg.exe` in this order: program folder, `_MEIPASS` folder (onefile build), `bin` subfolder, system PATH. If it does not find it, it shows a startup dialog with FFmpeg download links (BtbN and gyan.dev).
+The program looks for `ffmpeg.exe` i `ffprobe.exe` in this order: program folder, `_MEIPASS` folder (onefile build), `bin` subfolder, system PATH. If it does not find it, it shows a startup dialog with FFmpeg download links (BtbN and gyan.dev).
 
 ### Running from source (.py)
 
@@ -830,6 +832,7 @@ After downloading, put the `.onnx` file in the program folder. It can be the mai
 FaceBlur/
   FaceBlur2.0.exe
   ffmpeg.exe
+  ffprobe.exe
   settings.json
   models/
     yolov11n-seg.onnx
@@ -1126,8 +1129,8 @@ The **Screenshot** button saves the current frame to a JPG or PNG file.
 1. The program reads the video from the start, frame by frame.
 2. For every frame in the export range (or for the whole video when there are no ranges) it applies blur for active trackers.
 3. The video is written with the `mp4v` codec to a temp file with a unique name (`._fb_tmp_*.mp4`).
-4. If `ffmpeg.exe` is present, the program muxes the video with audio from the source into a `._fb_ff_*.mp4` file, then replaces the temp file with the target file. Temp files are deleted.
-5. If there is no `ffmpeg.exe`, the program saves video only, without audio, and adds a warning.
+4. If `ffmpeg.exe` and `ffprobe` is present, the program muxes the video with audio from the source into a `._fb_ff_*.mp4` file, then replaces the temp file with the target file. Temp files are deleted.
+5. If there is no `ffmpeg.exe` and `ffprobe`, the program saves video only, without audio, and adds a warning.
 
 Audio:
 
@@ -1201,7 +1204,7 @@ Read this section before publishing a video with people, especially children. No
 4. **Seg without a mask means no blur.** The program deliberately does not fill the box when there is no outline. This is better than a black square, but it means a frame can be without blur. Check the warnings.
 5. **No project file.** Trackers and markers are not saved. Closing the program or opening a new file deletes the work. Export right after finishing.
 6. **Undo deletes only the last tracker.** There is no full undo stack for mask edits, drags or markers. Undo for a mask edit is Reset mask on the current frame.
-7. **No audio without ffmpeg.exe.** The program saves video without audio and shows a warning. Audio needs `ffmpeg.exe` next to the program.
+7. **No audio without ffmpeg.exe and ffprobe.exe.** The program saves video without audio and shows a warning. Audio needs `ffmpeg.exe` and `ffprobe.exe` next to the program.
 8. **Performance.** Seg models, Far (2x2) and 4K video are clearly slower on CPU. Scanning a whole video can take a long time. Lower the AI threshold only when you really need it, because a lower threshold means more detections to process.
 9. **Paths with Polish characters.** The program tries to convert the path to a short 8.3 path for OpenCV on Windows. In most cases it works, but paths with unusual characters, long paths and network drives are still the most common source of open and save errors.
 10. **Video reading can end early.** A damaged file, a variable frame count or a codec error can make the export save fewer frames than the header declares. The program warns about this after export and shows the number of saved frames.
@@ -1241,7 +1244,7 @@ Read this section before publishing a video with people, especially children. No
 
 **Export has no audio.**
 
-- Put `ffmpeg.exe` next to the program and restart it. At startup it should not show the missing FFmpeg dialog.
+- Put `ffmpeg.exe` and `ffprobe.exe` next to the program and restart it. At startup it should not show the missing FFmpeg dialog.
 - Check whether the source has audio at all. If the source has no audio track, export without audio is correct.
 - Check the warning after export. If audio muxing failed, the program saves video without audio and reports it.
 
@@ -1269,14 +1272,13 @@ Typical layout worth keeping in the repo:
 
 ```text
 FaceBlur/
-  README.md
-  README_EN.md
   Face-Blur-V66-...py
-  faceblur2.0.jpg
+  
   models/
     yolov11n-seg.onnx
     yolo26n-seg.onnx
   ffmpeg.exe
+  ffprobe.exe
   settings.json
 ```
 
