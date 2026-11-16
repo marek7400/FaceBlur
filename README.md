@@ -1,6 +1,7 @@
 (In progress english version) W przygotowaniu wersja 2.0 z zamazywaniem postaci+inne usprawnienia...
 
-<img width="1920" height="1160" alt="fb2 0" src="https://github.com/user-attachments/assets/2ac8720c-a53f-4324-bcc9-51bcf1f51679" />
+<img width="1920" height="1160" alt="fb" src="https://github.com/user-attachments/assets/caa863a4-dc48-45bd-a70e-2ae86f99a92e" />
+
 <BR> <BR>
 
 # Face Blur Tool
